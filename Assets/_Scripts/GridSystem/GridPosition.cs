@@ -45,6 +45,15 @@ namespace GridSystem
         }
 
 
+        public static float Distance(GridPosition a, GridPosition b)
+        {
+            double x = a.x - b.x;
+            double y = a.y - b.y;
+            double z = a.z - b.z;
+            return (float) Math.Sqrt(x * x + y * y + z * z);
+        }
+        
+        
         public static bool operator ==(GridPosition lhs, GridPosition rhs)
         {
             return lhs.Equals(rhs);

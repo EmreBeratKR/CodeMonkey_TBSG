@@ -1,6 +1,8 @@
+using System;
 using System.Collections.Generic;
 using System.Text;
 using UnitSystem;
+using UnityEngine;
 
 namespace GridSystem
 {
@@ -26,6 +28,11 @@ namespace GridSystem
         public void RemoveUnit(Unit unit)
         {
             m_Units.Remove(unit);
+        }
+
+        public bool HasAnyUnit()
+        {
+            return m_Units.Count > 0;
         }
         
         

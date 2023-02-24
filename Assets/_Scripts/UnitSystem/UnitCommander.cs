@@ -1,5 +1,6 @@
 using System;
 using EmreBeratKR.ServiceLocator;
+using GridSystem;
 using UnityEngine;
 
 namespace UnitSystem
@@ -54,8 +55,16 @@ namespace UnitSystem
             var mousePosition = GameInput.GetMouseWorldPosition();
         
             if (!mousePosition.HasValue) return false;
-        
-            CommandUnitToMove(unit, mousePosition.Value);
+
+            var levelGrid = GetLevelGrid();
+            var mouseGridPosition = levelGrid.GetGridPosition(mousePosition.Value);
+
+            if (!levelGrid.IsValidGridPosition(mouseGridPosition)) return false;
+
+            const float maxMoveDistance = 2f;
+            if (GridPosition.Distance(unit.GridPosition, mouseGridPosition) > maxMoveDistance) return false;
+            
+            CommandUnitToMove(unit, levelGrid.GetWorldPosition(mouseGridPosition));
 
             return true;
         }
@@ -64,7 +73,14 @@ namespace UnitSystem
         {
             if (!unit) return;
         
-            unit.Move(position);
+            unit
+                .GetMoveCommand()
+                .Move(position);
+        }
+
+        private static LevelGrid GetLevelGrid()
+        {
+            return ServiceLocator.Get<LevelGrid>();
         }
     }
 }

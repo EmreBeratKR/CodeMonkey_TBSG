@@ -77,6 +77,15 @@ namespace GridSystem
             return GetGridObject(gridPosition.x, gridPosition.y, gridPosition.z);
         }
 
+        public bool IsValidGridPosition(GridPosition gridPosition)
+        {
+            if (gridPosition.x < 0 || gridPosition.x >= m_SizeX) return false;
+            
+            if (gridPosition.y < 0 || gridPosition.y >= m_SizeY) return false;
+
+            return gridPosition.z >= 0 && gridPosition.z < m_SizeZ;
+        }
+
         public void SpawnDebugGridObjects(GridDebugObject prefab, Transform parent = null)
         {
             for (var x = 0; x < m_SizeX; x++)

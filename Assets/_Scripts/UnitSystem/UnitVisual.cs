@@ -14,16 +14,18 @@ namespace UnitSystem
 
         private void Awake()
         {
-            unit.OnStartMoving += OnStartMoving;
-            unit.OnStopMoving += OnStopMoving;
+            var moveCommand = unit.GetMoveCommand();
+            moveCommand.OnStartMoving += OnStartMoving;
+            moveCommand.OnStopMoving += OnStopMoving;
         
             UnitCommander.OnSelectedUnitChanged += OnSelectedUnitChanged;
         }
 
         private void OnDestroy()
         {
-            unit.OnStartMoving -= OnStartMoving;
-            unit.OnStopMoving -= OnStopMoving;
+            var moveCommand = unit.GetMoveCommand();
+            moveCommand.OnStartMoving -= OnStartMoving;
+            moveCommand.OnStopMoving -= OnStopMoving;
         
             UnitCommander.OnSelectedUnitChanged -= OnSelectedUnitChanged;
         }
