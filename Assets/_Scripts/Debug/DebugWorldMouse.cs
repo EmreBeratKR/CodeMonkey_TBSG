@@ -1,4 +1,3 @@
-using EmreBeratKR.ServiceLocator;
 using UnityEngine;
 
 namespace Debug
