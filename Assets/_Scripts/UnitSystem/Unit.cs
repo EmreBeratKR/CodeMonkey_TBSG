@@ -1,4 +1,6 @@
 using System;
+using EmreBeratKR.ServiceLocator;
+using GridSystem;
 using UnityEngine;
 
 namespace UnitSystem
@@ -9,6 +11,7 @@ namespace UnitSystem
         public event Action OnStopMoving;
     
     
+        private GridPosition m_GridPosition;
         private Vector3 m_TargetPosition;
         private bool m_IsMoving;
 
@@ -16,6 +19,8 @@ namespace UnitSystem
         private void Start()
         {
             m_TargetPosition = transform.position;
+            m_GridPosition = GetGridPosition();
+            GetLevelGrid().AddUnitToGridPosition(this, m_GridPosition);
         }
 
 
@@ -23,6 +28,7 @@ namespace UnitSystem
         {
             MoveTowardsTargetPosition();
             LookTowardsTargetPosition();
+            ApplyGridPosition();
         }
 
 
@@ -78,6 +84,30 @@ namespace UnitSystem
         {
             m_IsMoving = false;
             OnStopMoving?.Invoke();
+        }
+
+        private GridPosition GetGridPosition()
+        {
+            return GetLevelGrid()
+                .GetGridPosition(transform.position);
+        }
+
+        private void ApplyGridPosition()
+        {
+            var gridPosition = GetGridPosition();
+            
+            if (gridPosition == m_GridPosition) return;
+
+            var levelGrid = GetLevelGrid();
+            levelGrid.RemoveUnitFromGridPosition(this, m_GridPosition);
+            levelGrid.AddUnitToGridPosition(this, gridPosition);
+            m_GridPosition = gridPosition;
+        }
+        
+
+        private static LevelGrid GetLevelGrid()
+        {
+            return ServiceLocator.Get<LevelGrid>();
         }
     }
 }
