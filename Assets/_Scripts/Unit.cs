@@ -7,6 +7,7 @@ public class Unit : MonoBehaviour
 
     private void Update()
     {
+        ClickToMove();
         MoveTowardsTargetPosition();
     }
 
@@ -15,7 +16,18 @@ public class Unit : MonoBehaviour
     {
         m_TargetPosition = position;
     }
-    
+
+
+    private void ClickToMove()
+    {
+        if (!Input.GetMouseButtonDown(0)) return;
+
+        var mousePosition = GameInput.GetMouseWorldPosition();
+        
+        if (!mousePosition.HasValue) return;
+        
+        Move(mousePosition.Value);
+    }
     
     private void MoveTowardsTargetPosition()
     {
