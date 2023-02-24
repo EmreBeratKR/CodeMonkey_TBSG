@@ -5,10 +5,28 @@ public class GameInput : ServiceBehaviour
 {
     [SerializeField] private LayerMask mouseRaycastLayerMask;
     [SerializeField] private LayerMask mouseSelectionLayerMask;
+
+
+    public static Vector2 MouseDelta => GetMouseDelta();
     
     
     private Camera m_Camera;
-    
+    private Vector2 m_MouseScreenPositionCurrentFrame;
+    private Vector2 m_MouseScreenPositionLastFrame;
+    private bool m_IsFirstFrame = true;
+
+
+    private void Update()
+    {
+        HandleDoubleBuffering();
+    }
+
+
+    public static Vector2 GetMouseScreenPosition()
+    {
+        var mousePosition = Input.mousePosition;
+        return new Vector2(mousePosition.x, mousePosition.y);
+    }
     
     public static Vector3? GetMouseWorldPosition()
     {
@@ -43,7 +61,27 @@ public class GameInput : ServiceBehaviour
             ? castedSelection
             : null;
     }
-    
+
+
+    private static Vector2 GetMouseDelta()
+    {
+        var instance = GetInstance();
+        return instance.m_MouseScreenPositionCurrentFrame - instance.m_MouseScreenPositionLastFrame;
+    }
+
+    private void HandleDoubleBuffering()
+    {
+        if (m_IsFirstFrame)
+        {
+            m_IsFirstFrame = false;
+            m_MouseScreenPositionLastFrame = GetMouseScreenPosition();
+            m_MouseScreenPositionCurrentFrame = m_MouseScreenPositionLastFrame;
+            return;
+        }
+
+        m_MouseScreenPositionLastFrame = m_MouseScreenPositionCurrentFrame;
+        m_MouseScreenPositionCurrentFrame = GetMouseScreenPosition();
+    }
     
     private Camera GetCamera()
     {
