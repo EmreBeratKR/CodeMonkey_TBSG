@@ -1,8 +1,16 @@
+using System;
 using EmreBeratKR.ServiceLocator;
 using UnityEngine;
 
 public class UnitCommander : ServiceBehaviour
 {
+    public static event Action<SelectedUnitChangedArgs> OnSelectedUnitChanged;
+    public struct SelectedUnitChangedArgs
+    {
+        public Unit unit;
+    }
+
+
     private Unit m_SelectedUnit;
     
     
@@ -30,6 +38,10 @@ public class UnitCommander : ServiceBehaviour
     private void SelectUnit(Unit unit)
     {
         m_SelectedUnit = unit;
+        OnSelectedUnitChanged?.Invoke(new SelectedUnitChangedArgs
+        {
+            unit = unit
+        });
     }
     
     
