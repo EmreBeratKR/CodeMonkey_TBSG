@@ -3,6 +3,9 @@ using UnityEngine;
 
 public class GameInput : ServiceBehaviour
 {
+    [SerializeField] private LayerMask mouseRaycastLayerMask;
+    
+    
     private Camera m_Camera;
     
     
@@ -12,7 +15,7 @@ public class GameInput : ServiceBehaviour
             .ScreenPointToRay(Input.mousePosition);
 
         var isHit = Physics
-            .Raycast(ray, out var hitInfo);
+            .Raycast(ray, out var hitInfo, float.MaxValue, mouseRaycastLayerMask);
 
         return isHit ? hitInfo.point : null;
     }
