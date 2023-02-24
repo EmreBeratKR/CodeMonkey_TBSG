@@ -1,14 +1,21 @@
+using System;
 using UnityEngine;
 
 public class Unit : MonoBehaviour
 {
+    public event Action OnStartMoving;
+    public event Action OnStopMoving;
+    
+    
     private Vector3 m_TargetPosition;
+    private bool m_IsMoving;
 
 
     private void Update()
     {
         ClickToMove();
         MoveTowardsTargetPosition();
+        LookTowardsTargetPosition();
     }
 
 
@@ -31,12 +38,30 @@ public class Unit : MonoBehaviour
     
     private void MoveTowardsTargetPosition()
     {
-        if (HasReachedToTargetPosition()) return;
+        if (HasReachedToTargetPosition())
+        {
+            if (m_IsMoving) StopMoving();
+            
+            return;
+        }
+        
+        if (!m_IsMoving) StartMoving();
         
         var directionNormalized = (m_TargetPosition - transform.position).normalized;
         const float moveSpeed = 4f;
         var motion = directionNormalized * (Time.deltaTime * moveSpeed);
         transform.position += motion;
+    }
+
+    private void LookTowardsTargetPosition()
+    {
+        if (!m_IsMoving) return;
+
+        var directionNormalized = m_TargetPosition - transform.position;
+
+        const float rotateSpeed = 25f;
+        transform.forward = Vector3
+            .Lerp(transform.forward, directionNormalized.normalized, Time.deltaTime * rotateSpeed);
     }
 
     private bool HasReachedToTargetPosition()
@@ -45,5 +70,17 @@ public class Unit : MonoBehaviour
         var sqrDistanceToTarget = Vector3.SqrMagnitude(m_TargetPosition - transform.position);
 
         return sqrDistanceToTarget <= maxSqrDistanceError;
+    }
+
+    private void StartMoving()
+    {
+        m_IsMoving = true;
+        OnStartMoving?.Invoke();
+    }
+
+    private void StopMoving()
+    {
+        m_IsMoving = false;
+        OnStopMoving?.Invoke();
     }
 }
