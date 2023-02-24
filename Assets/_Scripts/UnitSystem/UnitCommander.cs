@@ -50,6 +50,8 @@ namespace UnitSystem
     
         private static bool TryCommandUnitToMove(Unit unit)
         {
+            if (!unit) return false;
+            
             if (!Input.GetMouseButtonDown(0)) return false;
 
             var mousePosition = GameInput.GetMouseWorldPosition();
