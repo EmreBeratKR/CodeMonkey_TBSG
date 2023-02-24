@@ -10,9 +10,7 @@ namespace Debug
         
         private void Update()
         {
-            var mouseWorldPosition = ServiceLocator
-                .Get<GameInput>()
-                .GetMouseWorldPosition();
+            var mouseWorldPosition = GameInput.GetMouseWorldPosition();
 
             visual.SetActive(mouseWorldPosition.HasValue);
             transform.position = mouseWorldPosition.GetValueOrDefault();

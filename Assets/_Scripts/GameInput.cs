@@ -9,13 +9,15 @@ public class GameInput : ServiceBehaviour
     private Camera m_Camera;
     
     
-    public Vector3? GetMouseWorldPosition()
+    public static Vector3? GetMouseWorldPosition()
     {
-        var ray = GetCamera()
+        var instance = ServiceLocator.Get<GameInput>();
+
+        var ray = instance.GetCamera()
             .ScreenPointToRay(Input.mousePosition);
 
         var isHit = Physics
-            .Raycast(ray, out var hitInfo, float.MaxValue, mouseRaycastLayerMask);
+            .Raycast(ray, out var hitInfo, float.MaxValue, instance.mouseRaycastLayerMask);
 
         return isHit ? hitInfo.point : null;
     }
