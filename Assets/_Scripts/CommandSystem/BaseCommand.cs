@@ -12,7 +12,7 @@ namespace CommandSystem
         public event Action OnComplete;
 
 
-        protected Unit Unit { get; private set; }
+        public Unit Unit { get; private set; }
         
         
         protected Action onCompletedCallback;
@@ -31,6 +31,11 @@ namespace CommandSystem
         public virtual string GetName()
         {
             return GetType().Name;
+        }
+
+        public virtual int GetRequiredCommandPoint()
+        {
+            return 1;
         }
         
         public bool IsValidGridPosition(GridPosition gridPosition)

@@ -34,6 +34,11 @@ namespace CommandSystem
             return commandName;
         }
 
+        public override int GetRequiredCommandPoint()
+        {
+            return 2;
+        }
+
 
         private void PerformSpinning()
         {

@@ -1,3 +1,4 @@
+using TMPro;
 using UnitSystem;
 using UnityEngine;
 
@@ -5,8 +6,9 @@ namespace UI
 {
     public class UnitCommanderUI : MonoBehaviour
     {
-        [SerializeField] private GameObject commandButtonsPanel;
+        [SerializeField] private GameObject commandsPanel;
         [SerializeField] private GameObject busyPanel;
+        [SerializeField] private TMP_Text commandPointField;
         
         
         private CommandButtonUI[] m_CommandButtons;
@@ -18,16 +20,23 @@ namespace UI
             
             UnitCommander.OnSelectedUnitChanged += UnitCommander_OnSelectedUnitChanged;
             UnitCommander.OnBusyChanged += UnitCommander_OnBusyChanged;
+            
+            Unit.OnAnyUnitUsedCommandPoint += OnAnyUnitUsedCommandPoint;
         }
 
         private void OnDestroy()
         {
             UnitCommander.OnSelectedUnitChanged -= UnitCommander_OnSelectedUnitChanged;
             UnitCommander.OnBusyChanged -= UnitCommander_OnBusyChanged;
+            
+            Unit.OnAnyUnitUsedCommandPoint -= OnAnyUnitUsedCommandPoint;
         }
 
         private void UnitCommander_OnSelectedUnitChanged(UnitCommander.SelectedUnitChangedArgs args)
         {
+            SetBusyVisual(false);
+            SetCommandPoint(args.unit.CommandPoint);
+            
             var commands = args.unit.GetAllCommands();
             
             for (var i = 0; i < m_CommandButtons.Length; i++)
@@ -46,12 +55,22 @@ namespace UI
         {
             SetBusyVisual(args.isBusy);
         }
+        
+        private void OnAnyUnitUsedCommandPoint(Unit.AnyUnitUsedCommandPointArgs args)
+        {
+            SetCommandPoint(args.unit.CommandPoint);
+        }
 
 
         private void SetBusyVisual(bool value)
         {
             busyPanel.SetActive(value);
-            commandButtonsPanel.SetActive(!value);
+            commandsPanel.SetActive(!value);
+        }
+
+        private void SetCommandPoint(int value)
+        {
+            commandPointField.text = $"Command Count: {value}";
         }
     }
 }

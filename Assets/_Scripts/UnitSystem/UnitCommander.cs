@@ -105,6 +105,8 @@ namespace UnitSystem
             
             if (!Input.GetMouseButtonDown(0)) return false;
 
+            if (!command.Unit.TryUseCommandPoint(command)) return false;
+
             var mousePosition = GameInput.GetMouseWorldPosition();
         
             if (!mousePosition.HasValue) return false;

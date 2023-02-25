@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using CommandSystem;
 using EmreBeratKR.ServiceLocator;
@@ -8,7 +9,18 @@ namespace UnitSystem
 {
     public class Unit : MonoBehaviour
     {
+        private const int MaxCommandPoint = 2;
+
+
+        public static event Action<AnyUnitUsedCommandPointArgs> OnAnyUnitUsedCommandPoint;
+        public struct AnyUnitUsedCommandPointArgs
+        {
+            public Unit unit;
+        }
+        
+        
         public GridPosition GridPosition { get; private set; }
+        public int CommandPoint { get; private set; } = MaxCommandPoint;
 
 
         private BaseCommand[] m_Commands;
@@ -21,6 +33,8 @@ namespace UnitSystem
             m_Commands = GetComponents<BaseCommand>();
             m_MoveCommand = GetComponent<MoveCommand>();
             m_SpinCommand = GetComponent<SpinCommand>();
+            
+            TurnManager.OnTurnChanged += TurnManager_OnTurnChanged;
         }
 
         private void Start()
@@ -29,12 +43,23 @@ namespace UnitSystem
             GetLevelGrid().AddUnitToGridPosition(this, GridPosition);
         }
 
+        private void OnDestroy()
+        {
+            TurnManager.OnTurnChanged -= TurnManager_OnTurnChanged;
+        }
+
 
         private void Update()
         {
             ApplyGridPosition();
         }
 
+        
+        private void TurnManager_OnTurnChanged(TurnManager.TurnChangedArgs args)
+        {
+            RestoreCommandPoints();
+        }
+        
 
         public BaseCommand GetDefaultCommand()
         {
@@ -55,7 +80,40 @@ namespace UnitSystem
         {
             return m_SpinCommand;
         }
+
+        public bool TryUseCommandPoint(BaseCommand command)
+        {
+            if (!HasEnoughCommandPoint(command)) return false;
+            
+            UseCommandPoint(command);
+            return true;
+        }
         
+        public bool HasEnoughCommandPoint(BaseCommand command)
+        {
+            return CommandPoint >= command.GetRequiredCommandPoint();
+        }
+
+
+        private void UseCommandPoint(BaseCommand command)
+        {
+            var requiredCommandPoint = command.GetRequiredCommandPoint();
+            SetCommandPoint(CommandPoint - requiredCommandPoint);
+        }
+
+        private void RestoreCommandPoints()
+        {
+            SetCommandPoint(MaxCommandPoint);
+        }
+
+        private void SetCommandPoint(int value)
+        {
+            CommandPoint = value;
+            OnAnyUnitUsedCommandPoint?.Invoke(new AnyUnitUsedCommandPointArgs
+            {
+                unit = this
+            });
+        }
         
         private GridPosition GetGridPosition()
         {
