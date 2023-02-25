@@ -14,14 +14,14 @@ namespace UnitSystem
         }
 
 
-        private Unit m_SelectedUnit;
+        public Unit SelectedUnit { get; private set; }
     
     
         private void Update()
         {
             if (TrySelectUnit()) return;
         
-            TryCommandUnitToMove(m_SelectedUnit);
+            TryCommandUnitToMove(SelectedUnit);
         }
 
 
@@ -40,7 +40,7 @@ namespace UnitSystem
     
         private void SelectUnit(Unit unit)
         {
-            m_SelectedUnit = unit;
+            SelectedUnit = unit;
             OnSelectedUnitChanged?.Invoke(new SelectedUnitChangedArgs
             {
                 unit = unit
@@ -60,12 +60,12 @@ namespace UnitSystem
 
             var levelGrid = GetLevelGrid();
             var mouseGridPosition = levelGrid.GetGridPosition(mousePosition.Value);
+            var isValidGridPosition = unit
+                .GetMoveCommand()
+                .IsValidGridPosition(mouseGridPosition);
 
-            if (!levelGrid.IsValidGridPosition(mouseGridPosition)) return false;
+            if (!isValidGridPosition) return false;
 
-            const float maxMoveDistance = 2f;
-            if (GridPosition.Distance(unit.GridPosition, mouseGridPosition) > maxMoveDistance) return false;
-            
             CommandUnitToMove(unit, levelGrid.GetWorldPosition(mouseGridPosition));
 
             return true;

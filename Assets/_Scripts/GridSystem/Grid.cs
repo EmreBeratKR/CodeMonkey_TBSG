@@ -77,6 +77,21 @@ namespace GridSystem
             return GetGridObject(gridPosition.x, gridPosition.y, gridPosition.z);
         }
 
+        public int GetSizeX()
+        {
+            return m_SizeX;
+        }
+
+        public int GetSizeY()
+        {
+            return m_SizeY;
+        }
+
+        public int GetSizeZ()
+        {
+            return m_SizeZ;
+        }
+
         public bool IsValidGridPosition(GridPosition gridPosition)
         {
             if (gridPosition.x < 0 || gridPosition.x >= m_SizeX) return false;
@@ -84,6 +99,23 @@ namespace GridSystem
             if (gridPosition.y < 0 || gridPosition.y >= m_SizeY) return false;
 
             return gridPosition.z >= 0 && gridPosition.z < m_SizeZ;
+        }
+
+        public void SpawnGridVisuals(GridVisual visualPrefab, Transform parent = null)
+        {
+            for (var x = 0; x < m_SizeX; x++)
+            {
+                for (var y = 0; y < m_SizeY; y++)
+                {
+                    for (var z = 0; z < m_SizeZ; z++)
+                    {
+                        var gridPosition = new GridPosition(x, y, z);
+                        var newGridObject = new GridObject(this, gridPosition);
+                        newGridObject.SpawnVisual(visualPrefab, parent);
+                        m_GridObjects[x, y, z] = newGridObject;
+                    }
+                }
+            }
         }
 
         public void SpawnDebugGridObjects(GridDebugObject prefab, Transform parent = null)
@@ -112,18 +144,6 @@ namespace GridSystem
             m_Origin = origin;
             
             m_GridObjects = new GridObject[sizeX, sizeY, sizeZ];
-
-            for (var x = 0; x < sizeX; x++)
-            {
-                for (var y = 0; y < sizeY; y++)
-                {
-                    for (var z = 0; z < sizeX; z++)
-                    {
-                        var gridPosition = new GridPosition(x, y, z);
-                        m_GridObjects[x, y, z] = new GridObject(this, gridPosition);
-                    }
-                }
-            }
         }
     }
 }

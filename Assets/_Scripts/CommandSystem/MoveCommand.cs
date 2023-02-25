@@ -1,10 +1,17 @@
 using System;
+using System.Collections.Generic;
+using EmreBeratKR.ServiceLocator;
+using GridSystem;
+using UnitSystem;
 using UnityEngine;
 
 namespace CommandSystem
 {
     public class MoveCommand : MonoBehaviour
     {
+        [SerializeField] private Unit unit;
+        
+        
         public event Action OnStartMoving;
         public event Action OnStopMoving;
         
@@ -28,6 +35,49 @@ namespace CommandSystem
         public void Move(Vector3 position)
         {
             m_TargetPosition = position;
+        }
+
+        public bool IsValidGridPosition(GridPosition gridPosition)
+        {
+            var validGridPositions = GetAllValidGridPositions();
+
+            while (validGridPositions.MoveNext())
+            {
+                if (gridPosition != validGridPositions.Current) continue;
+                
+                validGridPositions.Dispose();
+                return true;
+            }
+            
+            validGridPositions.Dispose();
+            return false;
+        }
+        
+        public IEnumerator<GridPosition> GetAllValidGridPositions()
+        {
+            const float maxMoveDistance = 2f;
+            
+            var levelGrid = GetLevelGrid();
+            
+            for (var x = 0; x < levelGrid.GetSizeX(); x++)
+            {
+                for (var y = 0; y < levelGrid.GetSizeY(); y++)
+                {
+                    for (var z = 0; z < levelGrid.GetSizeZ(); z++)
+                    {
+                        var gridPosition = new GridPosition(x, y, z);
+                    
+                        if (!levelGrid.IsValidGridPosition(gridPosition)) continue;
+                        
+                        var isGreaterThanMaxDistance = GridPosition
+                            .Distance(unit.GridPosition, gridPosition) > maxMoveDistance;
+                        
+                        if (isGreaterThanMaxDistance) continue;
+
+                        yield return gridPosition;
+                    }
+                }
+            }
         }
         
         
@@ -77,6 +127,11 @@ namespace CommandSystem
         {
             m_IsMoving = false;
             OnStopMoving?.Invoke();
+        }
+
+        private static LevelGrid GetLevelGrid()
+        {
+            return ServiceLocator.Get<LevelGrid>();
         }
     }
 }

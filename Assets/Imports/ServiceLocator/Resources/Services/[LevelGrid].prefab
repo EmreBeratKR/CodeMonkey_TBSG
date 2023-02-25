@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2935141043168010419}
   - component: {fileID: 2935141043168010418}
+  - component: {fileID: 1380825971857177531}
   m_Layer: 0
   m_Name: '[LevelGrid]'
   m_TagString: Untagged
@@ -44,6 +45,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: df2418fcf4574a6eafb19b0e57743733, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gridVisualPrefab: {fileID: 8188098926938565662, guid: 5f9822ac05fdb4d0d97184e1fa574e70,
+    type: 3}
   gridDebugObjectPrefab: {fileID: 7244658032941949016, guid: e1020fd0b074945a19a8ff773a8c676f,
     type: 3}
   spawnDebugGridObjects: 1
+--- !u!114 &1380825971857177531
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2935141043168010421}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8272efdc90bc4dbb9c6fdea2a4056da6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

@@ -6,6 +6,7 @@ using Grid = GridSystem.Grid;
 
 public class LevelGrid : ServiceBehaviour
 {
+    [SerializeField] private GridVisual gridVisualPrefab;
     [SerializeField] private GridDebugObject gridDebugObjectPrefab;
     [SerializeField] private bool spawnDebugGridObjects = true;
         
@@ -15,6 +16,8 @@ public class LevelGrid : ServiceBehaviour
 
     private void Start()
     {
+        m_Grid.SpawnGridVisuals(gridVisualPrefab, transform);
+        
         if (spawnDebugGridObjects)
         {
             m_Grid.SpawnDebugGridObjects(gridDebugObjectPrefab, transform);
@@ -30,6 +33,26 @@ public class LevelGrid : ServiceBehaviour
     public Vector3 GetWorldPosition(GridPosition gridPosition)
     {
         return m_Grid.GetWorldPosition(gridPosition);
+    }
+
+    public GridObject GetGridObject(GridPosition gridPosition)
+    {
+        return m_Grid.GetGridObject(gridPosition);
+    }
+
+    public int GetSizeX()
+    {
+        return m_Grid.GetSizeX();
+    }
+
+    public int GetSizeY()
+    {
+        return m_Grid.GetSizeY();
+    }
+
+    public int GetSizeZ()
+    {
+        return m_Grid.GetSizeZ();
     }
     
     public void AddUnitToGridPosition(Unit unit, GridPosition gridPosition)
