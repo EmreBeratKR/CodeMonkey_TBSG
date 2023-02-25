@@ -26,13 +26,24 @@ namespace UnitSystem
             public CommandArgs args;
         }
 
+        public static event Action<BusyChangedArgs> OnBusyChanged;
+        public struct BusyChangedArgs
+        {
+            public bool isBusy;
+        }
+
 
         public BaseCommand SelectedCommand { get; private set; }
         public Unit SelectedUnit { get; private set; }
-    
+
+
+        private bool m_IsBusy;
+        
     
         private void Update()
         {
+            if (m_IsBusy) return;
+            
             if (GameInput.IsMouseOverUI()) return;
 
             if (TrySelectUnit()) return;
@@ -78,9 +89,17 @@ namespace UnitSystem
             
             SetSelectedCommand(unit.GetDefaultCommand());
         }
-    
-    
-        private static bool TryExecuteCommand(BaseCommand command)
+
+        private void SetBusy(bool value)
+        {
+            m_IsBusy = value;
+            OnBusyChanged?.Invoke(new BusyChangedArgs
+            {
+                isBusy = value
+            });
+        }
+        
+        private bool TryExecuteCommand(BaseCommand command)
         {
             if (!command) return false;
             
@@ -105,9 +124,11 @@ namespace UnitSystem
             return true;
         }
 
-        private static void ExecuteCommand(BaseCommand command, CommandArgs args)
+        private void ExecuteCommand(BaseCommand command, CommandArgs args)
         {
-            command.Execute(args);
+            SetBusy(true);
+            
+            command.Execute(args, () => SetBusy(false));
             OnCommandExecuted?.Invoke(new CommandExecutedArgs
             {
                 command = command,
@@ -115,6 +136,7 @@ namespace UnitSystem
             });
         }
 
+        
         private static LevelGrid GetLevelGrid()
         {
             return ServiceLocator.Get<LevelGrid>();

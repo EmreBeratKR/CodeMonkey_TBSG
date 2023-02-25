@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using EmreBeratKR.ServiceLocator;
 using GridSystem;
@@ -28,8 +29,9 @@ namespace CommandSystem
             return commandName;
         }
 
-        public override void Execute(CommandArgs args)
+        public override void Execute(CommandArgs args, Action onCompleted)
         {
+            onCompletedCallback = onCompleted;
             m_TargetPosition = args.positionToMove;
         }
 

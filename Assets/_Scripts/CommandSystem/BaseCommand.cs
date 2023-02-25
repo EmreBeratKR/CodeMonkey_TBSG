@@ -15,6 +15,7 @@ namespace CommandSystem
         protected Unit Unit { get; private set; }
         
         
+        protected Action onCompletedCallback;
         protected bool isActive;
 
 
@@ -24,7 +25,7 @@ namespace CommandSystem
         }
 
 
-        public abstract void Execute(CommandArgs args);
+        public abstract void Execute(CommandArgs args, Action onCompleted);
         public abstract IEnumerator<GridPosition> GetAllValidGridPositions();
         
         public virtual string GetName()
@@ -47,8 +48,8 @@ namespace CommandSystem
             validGridPositions.Dispose();
             return false;
         }
-
-
+        
+        
         protected void InvokeOnStart()
         {
             OnStart?.Invoke();
@@ -56,6 +57,7 @@ namespace CommandSystem
 
         protected void InvokeOnComplete()
         {
+            onCompletedCallback?.Invoke();
             OnComplete?.Invoke();
         }
     }

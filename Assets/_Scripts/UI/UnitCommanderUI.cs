@@ -5,6 +5,10 @@ namespace UI
 {
     public class UnitCommanderUI : MonoBehaviour
     {
+        [SerializeField] private GameObject commandButtonsPanel;
+        [SerializeField] private GameObject busyPanel;
+        
+        
         private CommandButtonUI[] m_CommandButtons;
 
 
@@ -12,15 +16,17 @@ namespace UI
         {
             m_CommandButtons = GetComponentsInChildren<CommandButtonUI>(true);
             
-            UnitCommander.OnSelectedUnitChanged += OnSelectedUnitChanged;
+            UnitCommander.OnSelectedUnitChanged += UnitCommander_OnSelectedUnitChanged;
+            UnitCommander.OnBusyChanged += UnitCommander_OnBusyChanged;
         }
 
         private void OnDestroy()
         {
-            UnitCommander.OnSelectedUnitChanged -= OnSelectedUnitChanged;
+            UnitCommander.OnSelectedUnitChanged -= UnitCommander_OnSelectedUnitChanged;
+            UnitCommander.OnBusyChanged -= UnitCommander_OnBusyChanged;
         }
 
-        private void OnSelectedUnitChanged(UnitCommander.SelectedUnitChangedArgs args)
+        private void UnitCommander_OnSelectedUnitChanged(UnitCommander.SelectedUnitChangedArgs args)
         {
             var commands = args.unit.GetAllCommands();
             
@@ -34,6 +40,18 @@ namespace UI
                 
                 m_CommandButtons[i].SetCommand(commands[i]);
             }
+        }
+        
+        private void UnitCommander_OnBusyChanged(UnitCommander.BusyChangedArgs args)
+        {
+            SetBusyVisual(args.isBusy);
+        }
+
+
+        private void SetBusyVisual(bool value)
+        {
+            busyPanel.SetActive(value);
+            commandButtonsPanel.SetActive(!value);
         }
     }
 }

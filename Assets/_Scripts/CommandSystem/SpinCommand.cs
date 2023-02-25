@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using GridSystem;
 using UnityEngine;
@@ -16,8 +17,9 @@ namespace CommandSystem
         }
 
 
-        public override void Execute(CommandArgs args)
+        public override void Execute(CommandArgs args, Action onCompleted)
         {
+            onCompletedCallback = onCompleted;
             StartSpinning();
         }
 
