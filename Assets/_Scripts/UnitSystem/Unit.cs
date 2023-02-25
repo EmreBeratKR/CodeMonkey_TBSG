@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using CommandSystem;
 using EmreBeratKR.ServiceLocator;
 using GridSystem;
@@ -7,11 +8,20 @@ namespace UnitSystem
 {
     public class Unit : MonoBehaviour
     {
-        [SerializeField] private MoveCommand moveCommand;
-        
-        
         public GridPosition GridPosition { get; private set; }
 
+
+        private BaseCommand[] m_Commands;
+        private MoveCommand m_MoveCommand;
+        private SpinCommand m_SpinCommand;
+
+
+        private void Awake()
+        {
+            m_Commands = GetComponents<BaseCommand>();
+            m_MoveCommand = GetComponent<MoveCommand>();
+            m_SpinCommand = GetComponent<SpinCommand>();
+        }
 
         private void Start()
         {
@@ -26,9 +36,24 @@ namespace UnitSystem
         }
 
 
+        public BaseCommand GetDefaultCommand()
+        {
+            return m_Commands[0];
+        }
+        
+        public IReadOnlyList<BaseCommand> GetAllCommands()
+        {
+            return m_Commands;
+        }
+
         public MoveCommand GetMoveCommand()
         {
-            return moveCommand;
+            return m_MoveCommand;
+        }
+
+        public SpinCommand GetSpinCommand()
+        {
+            return m_SpinCommand;
         }
         
         

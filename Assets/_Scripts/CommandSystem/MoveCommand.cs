@@ -1,23 +1,13 @@
-using System;
 using System.Collections.Generic;
 using EmreBeratKR.ServiceLocator;
 using GridSystem;
-using UnitSystem;
 using UnityEngine;
 
 namespace CommandSystem
 {
-    public class MoveCommand : MonoBehaviour
+    public class MoveCommand : BaseCommand
     {
-        [SerializeField] private Unit unit;
-        
-        
-        public event Action OnStartMoving;
-        public event Action OnStopMoving;
-        
-        
         private Vector3 m_TargetPosition;
-        private bool m_IsMoving;
 
 
         private void Start()
@@ -32,28 +22,18 @@ namespace CommandSystem
         }
 
 
-        public void Move(Vector3 position)
+        public override string GetName()
         {
-            m_TargetPosition = position;
+            const string commandName = "Move";
+            return commandName;
         }
 
-        public bool IsValidGridPosition(GridPosition gridPosition)
+        public override void Execute(CommandArgs args)
         {
-            var validGridPositions = GetAllValidGridPositions();
-
-            while (validGridPositions.MoveNext())
-            {
-                if (gridPosition != validGridPositions.Current) continue;
-                
-                validGridPositions.Dispose();
-                return true;
-            }
-            
-            validGridPositions.Dispose();
-            return false;
+            m_TargetPosition = args.positionToMove;
         }
-        
-        public IEnumerator<GridPosition> GetAllValidGridPositions()
+
+        public override IEnumerator<GridPosition> GetAllValidGridPositions()
         {
             const float maxMoveDistance = 2f;
             
@@ -70,7 +50,7 @@ namespace CommandSystem
                         if (!levelGrid.IsValidGridPosition(gridPosition)) continue;
                         
                         var isGreaterThanMaxDistance = GridPosition
-                            .Distance(unit.GridPosition, gridPosition) > maxMoveDistance;
+                            .Distance(Unit.GridPosition, gridPosition) > maxMoveDistance;
                         
                         if (isGreaterThanMaxDistance) continue;
 
@@ -85,12 +65,12 @@ namespace CommandSystem
         {
             if (HasReachedToTargetPosition())
             {
-                if (m_IsMoving) StopMoving();
+                if (isActive) StopMoving();
             
                 return;
             }
         
-            if (!m_IsMoving) StartMoving();
+            if (!isActive) StartMoving();
         
             var directionNormalized = (m_TargetPosition - transform.position).normalized;
             const float moveSpeed = 4f;
@@ -100,7 +80,7 @@ namespace CommandSystem
 
         private void LookTowardsTargetPosition()
         {
-            if (!m_IsMoving) return;
+            if (!isActive) return;
 
             var direction = m_TargetPosition - transform.position;
 
@@ -111,7 +91,7 @@ namespace CommandSystem
 
         private bool HasReachedToTargetPosition()
         {
-            const float maxSqrDistanceError = 0.0001f;
+            const float maxSqrDistanceError = 0.001f;
             var sqrDistanceToTarget = Vector3.SqrMagnitude(m_TargetPosition - transform.position);
 
             return sqrDistanceToTarget <= maxSqrDistanceError;
@@ -119,14 +99,14 @@ namespace CommandSystem
         
         private void StartMoving()
         {
-            m_IsMoving = true;
-            OnStartMoving?.Invoke();
+            isActive = true;
+            InvokeOnStart();
         }
 
         private void StopMoving()
         {
-            m_IsMoving = false;
-            OnStopMoving?.Invoke();
+            isActive = false;
+            InvokeOnComplete();
         }
 
         private static LevelGrid GetLevelGrid()

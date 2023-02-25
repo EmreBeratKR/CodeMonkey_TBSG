@@ -12,21 +12,29 @@ namespace UnitSystem
         [SerializeField] private GameObject selectedVisual;
 
 
-        private void Awake()
+        private void Start()
         {
             var moveCommand = unit.GetMoveCommand();
-            moveCommand.OnStartMoving += OnStartMoving;
-            moveCommand.OnStopMoving += OnStopMoving;
-        
+
+            if (moveCommand)
+            {
+                moveCommand.OnStart += OnStartMoving;
+                moveCommand.OnComplete += OnCompleteMoving;
+            }
+
             UnitCommander.OnSelectedUnitChanged += OnSelectedUnitChanged;
         }
 
         private void OnDestroy()
         {
             var moveCommand = unit.GetMoveCommand();
-            moveCommand.OnStartMoving -= OnStartMoving;
-            moveCommand.OnStopMoving -= OnStopMoving;
-        
+
+            if (moveCommand)
+            {
+                moveCommand.OnStart -= OnStartMoving;
+                moveCommand.OnComplete -= OnCompleteMoving;
+            }
+
             UnitCommander.OnSelectedUnitChanged -= OnSelectedUnitChanged;
         }
 
@@ -36,7 +44,7 @@ namespace UnitSystem
             SetIsMoving(true);
         }
     
-        private void OnStopMoving()
+        private void OnCompleteMoving()
         {
             SetIsMoving(false);
         }

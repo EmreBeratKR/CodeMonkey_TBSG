@@ -1,5 +1,6 @@
 using EmreBeratKR.ServiceLocator;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class GameInput : ServiceBehaviour
 {
@@ -22,6 +23,11 @@ public class GameInput : ServiceBehaviour
     }
 
 
+    public static bool IsMouseOverUI()
+    {
+        return EventSystem.current.IsPointerOverGameObject();
+    }
+    
     public static Vector2 GetMouseScreenPosition()
     {
         var mousePosition = Input.mousePosition;

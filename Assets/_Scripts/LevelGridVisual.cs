@@ -12,11 +12,10 @@ public class LevelGridVisual : MonoBehaviour
 
         HideAll();
         
-        if (!unitCommander.SelectedUnit) return;
+        if (!unitCommander.SelectedCommand) return;
         
         var allValidGridPosition = unitCommander
-            .SelectedUnit
-            .GetMoveCommand()
+            .SelectedCommand
             .GetAllValidGridPositions();
         
         Show(allValidGridPosition);

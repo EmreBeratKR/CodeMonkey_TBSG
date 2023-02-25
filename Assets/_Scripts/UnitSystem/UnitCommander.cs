@@ -1,6 +1,6 @@
 using System;
+using CommandSystem;
 using EmreBeratKR.ServiceLocator;
-using GridSystem;
 using UnityEngine;
 
 namespace UnitSystem
@@ -13,17 +13,45 @@ namespace UnitSystem
             public Unit unit;
         }
 
+        public static event Action<SelectedCommandChangedArgs> OnSelectedCommandChanged;
+        public struct SelectedCommandChangedArgs
+        {
+            public BaseCommand command;
+        }
 
+        public static event Action<CommandExecutedArgs> OnCommandExecuted;
+        public struct CommandExecutedArgs
+        {
+            public BaseCommand command;
+            public CommandArgs args;
+        }
+
+
+        public BaseCommand SelectedCommand { get; private set; }
         public Unit SelectedUnit { get; private set; }
     
     
         private void Update()
         {
+            if (GameInput.IsMouseOverUI()) return;
+
             if (TrySelectUnit()) return;
         
-            TryCommandUnitToMove(SelectedUnit);
+            TryExecuteCommand(SelectedCommand);
         }
 
+
+        public void SetSelectedCommand(BaseCommand command)
+        {
+            if (command == SelectedCommand) return;
+            
+            SelectedCommand = command;
+            OnSelectedCommandChanged?.Invoke(new SelectedCommandChangedArgs
+            {
+                command = command
+            });
+        }
+        
 
         private bool TrySelectUnit()
         {
@@ -32,6 +60,8 @@ namespace UnitSystem
             var selection = GameInput.GetMouseSelection<Unit>();
 
             if (!selection) return false;
+
+            if (selection == SelectedUnit) return false;
         
             SelectUnit(selection);
 
@@ -45,12 +75,14 @@ namespace UnitSystem
             {
                 unit = unit
             });
+            
+            SetSelectedCommand(unit.GetDefaultCommand());
         }
     
     
-        private static bool TryCommandUnitToMove(Unit unit)
+        private static bool TryExecuteCommand(BaseCommand command)
         {
-            if (!unit) return false;
+            if (!command) return false;
             
             if (!Input.GetMouseButtonDown(0)) return false;
 
@@ -60,24 +92,27 @@ namespace UnitSystem
 
             var levelGrid = GetLevelGrid();
             var mouseGridPosition = levelGrid.GetGridPosition(mousePosition.Value);
-            var isValidGridPosition = unit
-                .GetMoveCommand()
+            var isValidGridPosition = command
                 .IsValidGridPosition(mouseGridPosition);
 
             if (!isValidGridPosition) return false;
-
-            CommandUnitToMove(unit, levelGrid.GetWorldPosition(mouseGridPosition));
-
+            
+            ExecuteCommand(command, new CommandArgs
+            {
+                positionToMove = levelGrid.GetWorldPosition(mouseGridPosition)
+            });
+            
             return true;
         }
-    
-        private static void CommandUnitToMove(Unit unit, Vector3 position)
+
+        private static void ExecuteCommand(BaseCommand command, CommandArgs args)
         {
-            if (!unit) return;
-        
-            unit
-                .GetMoveCommand()
-                .Move(position);
+            command.Execute(args);
+            OnCommandExecuted?.Invoke(new CommandExecutedArgs
+            {
+                command = command,
+                args = args
+            });
         }
 
         private static LevelGrid GetLevelGrid()
