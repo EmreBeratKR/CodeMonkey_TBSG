@@ -6,6 +6,7 @@ namespace UnitSystem
     public class UnitVisual : MonoBehaviour
     {
         private static readonly int IsMovingID = Animator.StringToHash("IsMoving");
+        private static readonly int ShootID = Animator.StringToHash("Shoot");
 
 
         [SerializeField] private Unit unit;
@@ -23,6 +24,13 @@ namespace UnitSystem
                 moveCommand.OnComplete += OnCompleteMoving;
             }
 
+            var shootCommand = unit.GetCommand<ShootCommand>();
+
+            if (shootCommand)
+            {
+                shootCommand.OnShoot += OnShoot;
+            }
+
             UnitCommander.OnSelectedUnitChanged += OnSelectedUnitChanged;
         }
 
@@ -34,6 +42,13 @@ namespace UnitSystem
             {
                 moveCommand.OnStart -= OnStartMoving;
                 moveCommand.OnComplete -= OnCompleteMoving;
+            }
+            
+            var shootCommand = unit.GetCommand<ShootCommand>();
+
+            if (shootCommand)
+            {
+                shootCommand.OnShoot -= OnShoot;
             }
 
             UnitCommander.OnSelectedUnitChanged -= OnSelectedUnitChanged;
@@ -49,6 +64,11 @@ namespace UnitSystem
         {
             SetIsMoving(false);
         }
+        
+        private void OnShoot(ShootCommand.ShootArgs args)
+        {
+            TriggerShoot();
+        }
     
         private void OnSelectedUnitChanged(UnitCommander.SelectedUnitChangedArgs args)
         {
@@ -60,6 +80,11 @@ namespace UnitSystem
         private void SetIsMoving(bool value)
         {
             animator.SetBool(IsMovingID, value);
+        }
+
+        private void TriggerShoot()
+        {
+            animator.SetTrigger(ShootID);
         }
 
         private void SetActiveSelectedVisual(bool value)

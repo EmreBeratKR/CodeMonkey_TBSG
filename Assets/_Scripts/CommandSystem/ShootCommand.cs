@@ -8,6 +8,17 @@ namespace CommandSystem
 {
     public class ShootCommand : BaseCommand
     {
+        [SerializeField] private Weapon weapon;
+
+
+        public event Action<ShootArgs> OnShoot;
+        public struct ShootArgs
+        {
+            public Unit shooterUnit;
+            public Unit shotUnit;
+        }
+        
+        
         private Unit m_UnitToShoot;
         private State m_State;
         private float m_Timer;
@@ -81,17 +92,24 @@ namespace CommandSystem
             switch (m_State)
             {
                 case State.Aim:
-                    const float shootTimer = 1f;
+                    const float shootTimer = 99999f;
                     m_State = State.Shoot;
                     m_Timer = shootTimer;
-                    UnityEngine.Debug.Log("shoot");
+                    weapon.Shoot(m_UnitToShoot, () =>
+                    {
+                        OnShoot?.Invoke(new ShootArgs
+                        {
+                            shooterUnit = Unit,
+                            shotUnit = m_UnitToShoot
+                        });
+                        m_Timer = 0f;
+                    });
                     break;
                 
                 case State.Shoot:
                     const float unArmTimer = 0.5f;
                     m_State = State.UnArm;
                     m_Timer = unArmTimer;
-                    UnityEngine.Debug.Log("unArm");
                     break;
                 
                 case State.UnArm:

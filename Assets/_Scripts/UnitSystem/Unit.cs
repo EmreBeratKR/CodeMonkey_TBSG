@@ -106,6 +106,11 @@ namespace UnitSystem
             return teamType == team;
         }
 
+        public Vector3 GetShootOffset()
+        {
+            return Vector3.up * 1.5f;
+        }
+
 
         private void UseCommandPoint(BaseCommand command)
         {
