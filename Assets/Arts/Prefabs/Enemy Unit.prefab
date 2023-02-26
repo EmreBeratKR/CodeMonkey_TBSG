@@ -12,6 +12,12 @@ PrefabInstance:
       propertyPath: teamType
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 1067317033996018499, guid: 1386578e7eea64567b87ad5deb2fba6b,
+        type: 3}
+      propertyPath: ragdollPrefab
+      value: 
+      objectReference: {fileID: 6170739443716352169, guid: 6b645a1a20bf242efae0e9e62b2b360c,
+        type: 3}
     - target: {fileID: 1067317033996018524, guid: 1386578e7eea64567b87ad5deb2fba6b,
         type: 3}
       propertyPath: m_RootOrder

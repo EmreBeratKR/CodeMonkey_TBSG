@@ -97,6 +97,8 @@ namespace CommandSystem
                     m_Timer = shootTimer;
                     weapon.Shoot(m_UnitToShoot, () =>
                     {
+                        const int damage = 40;
+                        m_UnitToShoot.Damage(damage);
                         OnShoot?.Invoke(new ShootArgs
                         {
                             shooterUnit = Unit,

@@ -12,6 +12,9 @@ namespace UnitSystem
         private const int MaxCommandPoint = 2;
 
 
+        [SerializeField] private Ragdoll ragdollPrefab;
+        [SerializeField] private Transform rootBone;
+        [SerializeField] private Health health;
         [SerializeField] private TeamType teamType;
         
 
@@ -33,6 +36,8 @@ namespace UnitSystem
         {
             m_Commands = GetComponents<BaseCommand>();
 
+            health.OnDead += OnDead;
+            
             TurnManager.OnTurnChanged += TurnManager_OnTurnChanged;
         }
 
@@ -44,6 +49,8 @@ namespace UnitSystem
 
         private void OnDestroy()
         {
+            health.OnDead -= OnDead;
+            
             TurnManager.OnTurnChanged -= TurnManager_OnTurnChanged;
         }
 
@@ -54,11 +61,18 @@ namespace UnitSystem
         }
 
         
+        private void OnDead()
+        {
+            var levelGrid = GetLevelGrid();
+            levelGrid.RemoveUnitFromGridPosition(this, GridPosition);
+            Die();
+        }
+        
         private void TurnManager_OnTurnChanged(TurnManager.TurnChangedArgs args)
         {
             RestoreCommandPoints();
         }
-        
+
 
         public BaseCommand GetDefaultCommand()
         {
@@ -111,6 +125,11 @@ namespace UnitSystem
             return Vector3.up * 1.5f;
         }
 
+        public void Damage(int value)
+        {
+            health.Damage(value);
+        }
+
 
         private void UseCommandPoint(BaseCommand command)
         {
@@ -149,7 +168,13 @@ namespace UnitSystem
             levelGrid.AddUnitToGridPosition(this, gridPosition);
             GridPosition = gridPosition;
         }
-        
+
+        private void Die()
+        {
+            Destroy(gameObject);
+            var ragdoll = Instantiate(ragdollPrefab, transform.position, transform.rotation);
+            ragdoll.Setup(rootBone);
+        }
 
         private static LevelGrid GetLevelGrid()
         {
