@@ -1,3 +1,4 @@
+using EmreBeratKR.ServiceLocator;
 using TMPro;
 using UnitSystem;
 using UnityEngine;
@@ -63,7 +64,16 @@ namespace UI
         
         private void OnAnyUnitUsedCommandPoint(Unit.AnyUnitUsedCommandPointArgs args)
         {
+            var unitCommander = GetUnitCommander();
+            
+            if (!unitCommander.SelectedUnit) return;
+            
             SetCommandPoint(args.unit.CommandPoint);
+
+            foreach (var commandButton in m_CommandButtons)
+            {
+                commandButton.UpdateInteractable();
+            }
         }
         
         private void TurnManager_OnTurnChanged(TurnManager.TurnChangedArgs args)
@@ -87,6 +97,12 @@ namespace UI
         private void SetCommandPoint(int value)
         {
             commandPointField.text = $"Command Count: {value}";
+        }
+
+
+        private static UnitCommander GetUnitCommander()
+        {
+            return ServiceLocator.Get<UnitCommander>();
         }
     }
 }

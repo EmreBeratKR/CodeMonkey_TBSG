@@ -10,6 +10,8 @@ namespace UI
     public class CommandButtonUI : MonoBehaviour
     {
         [SerializeField] private GameObject selectedVisual;
+        [SerializeField] private CanvasGroup canvasGroup;
+        [SerializeField] private TMP_Text requiredCommandPointField;
         [SerializeField] private TMP_Text nameField;
         [SerializeField] private Button button;
 
@@ -47,6 +49,8 @@ namespace UI
             m_Command = command;
             gameObject.SetActive(true);
             nameField.text = command.GetName();
+            SetRequiredCommandPoint(command.GetRequiredCommandPoint());
+            UpdateInteractable();
         }
 
         public void ClearCommand()
@@ -55,10 +59,31 @@ namespace UI
             gameObject.SetActive(false);
         }
 
+        public void UpdateInteractable()
+        {
+            var interactable = !m_Command || m_Command.Unit.HasEnoughCommandPoint(m_Command);
+            SetInteractable(interactable);
+        }
 
+
+        private void SetRequiredCommandPoint(int value)
+        {
+            requiredCommandPointField.text = value.ToString();
+        }
+        
         private void SetActiveSelectedVisual(bool value)
         {
             selectedVisual.SetActive(value);
+        }
+
+        private void SetInteractable(bool value)
+        {
+            const float interactableAlpha = 1f;
+            const float notInteractableAlpha = 0.25f;
+            canvasGroup.interactable = value;
+            canvasGroup.alpha = value 
+                ? interactableAlpha 
+                : notInteractableAlpha;
         }
         
         

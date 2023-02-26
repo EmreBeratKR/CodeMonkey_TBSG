@@ -12,6 +12,8 @@ public class LevelGridVisual : MonoBehaviour
 
         HideAll();
         
+        if (unitCommander.IsBusy()) return;
+        
         if (!unitCommander.SelectedCommand) return;
         
         var allValidGridPosition = unitCommander

@@ -81,6 +81,11 @@ namespace UnitSystem
                 command = command
             });
         }
+
+        public bool IsBusy()
+        {
+            return m_IsBusy;
+        }
         
 
         private bool TrySelectUnit()
