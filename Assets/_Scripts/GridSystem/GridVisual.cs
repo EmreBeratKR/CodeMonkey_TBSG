@@ -1,5 +1,4 @@
 using EmreBeratKR.ServiceLocator;
-using UI;
 using UnitSystem;
 using UnityEngine;
 
@@ -12,11 +11,13 @@ namespace GridSystem
         
         public void SetActive(bool value)
         {
-            visual.gameObject.SetActive(value);
+            if (value)
+            {
+                SetState(GetState());
+                return;
+            }
             
-            if (!value) return;
-            
-            SetState(GetState());
+            SetState(GridVisualState.Unreachable);
         }
 
 
@@ -37,7 +38,8 @@ namespace GridSystem
             visual.material.color = state switch
             {
                 GridVisualState.Available => Color.white,
-                GridVisualState.NotEnoughCommandPoint => Color.red
+                GridVisualState.NotEnoughCommandPoint => Color.red,
+                GridVisualState.Unreachable => Color.black
             };
         }
 
@@ -51,7 +53,8 @@ namespace GridSystem
         private enum GridVisualState
         {
             Available,
-            NotEnoughCommandPoint
+            NotEnoughCommandPoint,
+            Unreachable
         }
     }
 }

@@ -49,7 +49,7 @@ MonoBehaviour:
     type: 3}
   gridDebugObjectPrefab: {fileID: 7244658032941949016, guid: e1020fd0b074945a19a8ff773a8c676f,
     type: 3}
-  spawnDebugGridObjects: 1
+  spawnDebugGridObjects: 0
 --- !u!114 &1380825971857177531
 MonoBehaviour:
   m_ObjectHideFlags: 0
