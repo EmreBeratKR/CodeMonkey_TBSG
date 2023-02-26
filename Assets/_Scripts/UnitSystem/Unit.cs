@@ -24,16 +24,12 @@ namespace UnitSystem
 
 
         private BaseCommand[] m_Commands;
-        private MoveCommand m_MoveCommand;
-        private SpinCommand m_SpinCommand;
 
 
         private void Awake()
         {
             m_Commands = GetComponents<BaseCommand>();
-            m_MoveCommand = GetComponent<MoveCommand>();
-            m_SpinCommand = GetComponent<SpinCommand>();
-            
+
             TurnManager.OnTurnChanged += TurnManager_OnTurnChanged;
         }
 
@@ -71,14 +67,17 @@ namespace UnitSystem
             return m_Commands;
         }
 
-        public MoveCommand GetMoveCommand()
+        public T GetCommand<T>()
+            where T : BaseCommand
         {
-            return m_MoveCommand;
-        }
+            foreach (var command in m_Commands)
+            {
+                if (command is not T commandAsT) continue;
 
-        public SpinCommand GetSpinCommand()
-        {
-            return m_SpinCommand;
+                return commandAsT;
+            }
+
+            return null;
         }
 
         public bool TryUseCommandPoint(BaseCommand command)

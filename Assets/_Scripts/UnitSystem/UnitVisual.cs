@@ -1,3 +1,4 @@
+using CommandSystem;
 using UnityEngine;
 
 namespace UnitSystem
@@ -14,7 +15,7 @@ namespace UnitSystem
 
         private void Start()
         {
-            var moveCommand = unit.GetMoveCommand();
+            var moveCommand = unit.GetCommand<MoveCommand>();
 
             if (moveCommand)
             {
@@ -27,7 +28,7 @@ namespace UnitSystem
 
         private void OnDestroy()
         {
-            var moveCommand = unit.GetMoveCommand();
+            var moveCommand = unit.GetCommand<MoveCommand>();
 
             if (moveCommand)
             {

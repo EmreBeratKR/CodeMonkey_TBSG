@@ -15,10 +15,12 @@ namespace CommandSystem
         public Unit Unit { get; private set; }
         
         
-        protected Action onCompletedCallback;
         protected bool isActive;
+        
+        
+        private Action m_OnCompletedCallback;
 
-
+        
         protected virtual void Awake()
         {
             Unit = GetComponent<Unit>();
@@ -55,14 +57,17 @@ namespace CommandSystem
         }
         
         
-        protected void InvokeOnStart()
+        protected void StartCommand(Action onCompleteCallback)
         {
+            isActive = true;
+            m_OnCompletedCallback = onCompleteCallback;
             OnStart?.Invoke();
         }
 
-        protected void InvokeOnComplete()
+        protected void CompleteCommand()
         {
-            onCompletedCallback?.Invoke();
+            isActive = false;
+            m_OnCompletedCallback?.Invoke();
             OnComplete?.Invoke();
         }
     }

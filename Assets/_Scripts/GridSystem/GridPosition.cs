@@ -4,6 +4,9 @@ namespace GridSystem
 {
     public struct GridPosition : IEquatable<GridPosition>
     {
+        public static readonly GridPosition One = new(1, 1, 1); 
+        
+        
         public int x;
         public int y;
         public int z;
@@ -62,6 +65,21 @@ namespace GridSystem
         public static bool operator !=(GridPosition lhs, GridPosition rhs)
         {
             return !(lhs == rhs);
+        }
+
+        public static GridPosition operator +(GridPosition lhs, GridPosition rhs)
+        {
+            return new GridPosition(lhs.x + rhs.x, lhs.y + rhs.y, lhs.z + rhs.z);
+        }
+        
+        public static GridPosition operator -(GridPosition lhs, GridPosition rhs)
+        {
+            return new GridPosition(lhs.x - rhs.x, lhs.y - rhs.y, lhs.z - rhs.z);
+        }
+
+        public static GridPosition operator *(GridPosition lhs, int rhs)
+        {
+            return new GridPosition(lhs.x * rhs, lhs.y * rhs, lhs.z * rhs);
         }
     }
 }

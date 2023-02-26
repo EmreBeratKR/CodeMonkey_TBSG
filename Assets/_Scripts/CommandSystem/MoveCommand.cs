@@ -18,41 +18,42 @@ namespace CommandSystem
 
         private void Update()
         {
+            if (!isActive) return;
+            
             MoveTowardsTargetPosition();
             LookTowardsTargetPosition();
         }
 
 
-        public override string GetName()
-        {
-            const string commandName = "Move";
-            return commandName;
-        }
-
         public override void Execute(CommandArgs args, Action onCompleted)
         {
-            onCompletedCallback = onCompleted;
             m_TargetPosition = args.positionToMove;
+            StartCommand(onCompleted);
         }
-
+        
         public override IEnumerator<GridPosition> GetAllValidGridPositions()
         {
             const float maxMoveDistance = 2f;
+
+            var maxDistanceInt = Mathf.FloorToInt(maxMoveDistance);
+            var unitGridPosition = Unit.GridPosition;
+            var maxGridPosition = unitGridPosition + new GridPosition(1, 0, 1) * maxDistanceInt;
+            var minGridPosition = unitGridPosition - new GridPosition(1, 0, 1) * maxDistanceInt;
             
             var levelGrid = GetLevelGrid();
-            
-            for (var x = 0; x < levelGrid.GetSizeX(); x++)
+
+            for (var x = minGridPosition.x; x <= maxGridPosition.x; x++)
             {
-                for (var y = 0; y < levelGrid.GetSizeY(); y++)
+                for (var y = maxGridPosition.y; y <= maxGridPosition.y; y++)
                 {
-                    for (var z = 0; z < levelGrid.GetSizeZ(); z++)
+                    for (var z = minGridPosition.z; z <= maxGridPosition.z; z++)
                     {
                         var gridPosition = new GridPosition(x, y, z);
-                    
+
                         if (!levelGrid.IsValidGridPosition(gridPosition)) continue;
                         
                         var isGreaterThanMaxDistance = GridPosition
-                            .Distance(Unit.GridPosition, gridPosition) > maxMoveDistance;
+                            .Distance(unitGridPosition, gridPosition) > maxMoveDistance;
                         
                         if (isGreaterThanMaxDistance) continue;
 
@@ -62,18 +63,21 @@ namespace CommandSystem
             }
         }
         
-        
+        public override string GetName()
+        {
+            const string commandName = "Move";
+            return commandName;
+        }
+
+
         private void MoveTowardsTargetPosition()
         {
             if (HasReachedToTargetPosition())
             {
-                if (isActive) StopMoving();
-            
+                CompleteCommand();
                 return;
             }
-        
-            if (!isActive) StartMoving();
-        
+
             var directionNormalized = (m_TargetPosition - transform.position).normalized;
             const float moveSpeed = 4f;
             var motion = directionNormalized * (Time.deltaTime * moveSpeed);
@@ -82,8 +86,6 @@ namespace CommandSystem
 
         private void LookTowardsTargetPosition()
         {
-            if (!isActive) return;
-
             var direction = m_TargetPosition - transform.position;
 
             const float rotateSpeed = 25f;
@@ -99,17 +101,6 @@ namespace CommandSystem
             return sqrDistanceToTarget <= maxSqrDistanceError;
         }
         
-        private void StartMoving()
-        {
-            isActive = true;
-            InvokeOnStart();
-        }
-
-        private void StopMoving()
-        {
-            isActive = false;
-            InvokeOnComplete();
-        }
 
         private static LevelGrid GetLevelGrid()
         {

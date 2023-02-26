@@ -13,14 +13,18 @@ namespace CommandSystem
 
         private void Update()
         {
+            if (!isActive) return;
+            
             PerformSpinning();
         }
 
 
         public override void Execute(CommandArgs args, Action onCompleted)
         {
-            onCompletedCallback = onCompleted;
-            StartSpinning();
+            const float targetSpinAngle = 360f;
+            m_TargetSpinAngle = targetSpinAngle;
+            m_SpinnedAngle = 0f;
+            StartCommand(onCompleted);
         }
 
         public override IEnumerator<GridPosition> GetAllValidGridPositions()
@@ -42,13 +46,11 @@ namespace CommandSystem
 
         private void PerformSpinning()
         {
-            if (!isActive) return;
-
             var hasReachedTargetSpinAngle = m_SpinnedAngle >= m_TargetSpinAngle;
             
             if (hasReachedTargetSpinAngle)
             {
-                StopSpinning();
+                CompleteCommand();
                 return;
             }
 
@@ -56,21 +58,6 @@ namespace CommandSystem
             var deltaSpinAngle = Time.deltaTime * spinSpeed;
             transform.eulerAngles += Vector3.up * deltaSpinAngle;
             m_SpinnedAngle += deltaSpinAngle;
-        }
-        
-        private void StartSpinning()
-        {
-            const float targetSpinAngle = 360f;
-            m_TargetSpinAngle = targetSpinAngle;
-            m_SpinnedAngle = 0f;
-            isActive = true;
-            InvokeOnStart();
-        }
-
-        private void StopSpinning()
-        {
-            isActive = false;
-            InvokeOnComplete();
         }
     }
 }
