@@ -12,6 +12,9 @@ namespace UnitSystem
         private const int MaxCommandPoint = 2;
 
 
+        [SerializeField] private TeamType teamType;
+        
+
         public static event Action<AnyUnitUsedCommandPointArgs> OnAnyUnitUsedCommandPoint;
         public struct AnyUnitUsedCommandPointArgs
         {
@@ -91,6 +94,11 @@ namespace UnitSystem
         public bool HasEnoughCommandPoint(BaseCommand command)
         {
             return CommandPoint >= command.GetRequiredCommandPoint();
+        }
+
+        public bool IsInsideTeam(TeamType team)
+        {
+            return teamType == team;
         }
 
 

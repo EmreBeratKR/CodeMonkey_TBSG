@@ -37,13 +37,26 @@ namespace UnitSystem
         public Unit SelectedUnit { get; private set; }
 
 
+        private bool m_IsMyTurn;
         private bool m_IsBusy;
-        
-    
+
+
+        private void Awake()
+        {
+            TurnManager.OnTurnChanged += TurnManager_OnTurnChanged;
+        }
+
+        private void OnDestroy()
+        {
+            TurnManager.OnTurnChanged -= TurnManager_OnTurnChanged;
+        }
+
         private void Update()
         {
             if (m_IsBusy) return;
             
+            if (!m_IsMyTurn) return;
+
             if (GameInput.IsMouseOverUI()) return;
 
             if (TrySelectUnit()) return;
@@ -51,6 +64,12 @@ namespace UnitSystem
             TryExecuteCommand(SelectedCommand);
         }
 
+        
+        private void TurnManager_OnTurnChanged(TurnManager.TurnChangedArgs args)
+        {
+            m_IsMyTurn = args.team == TeamType.Player;
+        }
+        
 
         public void SetSelectedCommand(BaseCommand command)
         {
@@ -73,6 +92,8 @@ namespace UnitSystem
             if (!selection) return false;
 
             if (selection == SelectedUnit) return false;
+
+            if (!selection.IsInsideTeam(TeamType.Player)) return false;
         
             SelectUnit(selection);
 
@@ -105,8 +126,6 @@ namespace UnitSystem
             
             if (!Input.GetMouseButtonDown(0)) return false;
 
-            if (!command.Unit.TryUseCommandPoint(command)) return false;
-
             var mousePosition = GameInput.GetMouseWorldPosition();
         
             if (!mousePosition.HasValue) return false;
@@ -117,6 +136,8 @@ namespace UnitSystem
                 .IsValidGridPosition(mouseGridPosition);
 
             if (!isValidGridPosition) return false;
+            
+            if (!command.Unit.TryUseCommandPoint(command)) return false;
             
             ExecuteCommand(command, new CommandArgs
             {
@@ -137,7 +158,7 @@ namespace UnitSystem
                 args = args
             });
         }
-
+        
         
         private static LevelGrid GetLevelGrid()
         {

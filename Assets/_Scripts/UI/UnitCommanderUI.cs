@@ -8,6 +8,7 @@ namespace UI
     {
         [SerializeField] private GameObject commandsPanel;
         [SerializeField] private GameObject busyPanel;
+        [SerializeField] private GameObject waitForYourTurnPanel;
         [SerializeField] private TMP_Text commandPointField;
         
         
@@ -22,6 +23,8 @@ namespace UI
             UnitCommander.OnBusyChanged += UnitCommander_OnBusyChanged;
             
             Unit.OnAnyUnitUsedCommandPoint += OnAnyUnitUsedCommandPoint;
+            
+            TurnManager.OnTurnChanged += TurnManager_OnTurnChanged;
         }
 
         private void OnDestroy()
@@ -30,6 +33,8 @@ namespace UI
             UnitCommander.OnBusyChanged -= UnitCommander_OnBusyChanged;
             
             Unit.OnAnyUnitUsedCommandPoint -= OnAnyUnitUsedCommandPoint;
+            
+            TurnManager.OnTurnChanged -= TurnManager_OnTurnChanged;
         }
 
         private void UnitCommander_OnSelectedUnitChanged(UnitCommander.SelectedUnitChangedArgs args)
@@ -60,11 +65,22 @@ namespace UI
         {
             SetCommandPoint(args.unit.CommandPoint);
         }
+        
+        private void TurnManager_OnTurnChanged(TurnManager.TurnChangedArgs args)
+        {
+            SetWaitForYourTurnVisual(args.team != TeamType.Player);
+        }
 
 
         private void SetBusyVisual(bool value)
         {
             busyPanel.SetActive(value);
+            commandsPanel.SetActive(!value);
+        }
+
+        private void SetWaitForYourTurnVisual(bool value)
+        {
+            waitForYourTurnPanel.SetActive(value);
             commandsPanel.SetActive(!value);
         }
 

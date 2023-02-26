@@ -3,10 +3,14 @@ using EmreBeratKR.ServiceLocator;
 
 public class TurnManager : ServiceBehaviour
 {
+    private static readonly int TeamCount = Enum.GetValues(typeof(TeamType)).Length;
+    
+    
     public static event Action<TurnChangedArgs> OnTurnChanged;
     public struct TurnChangedArgs
     {
         public int turn;
+        public TeamType team;
     }
     
     
@@ -29,7 +33,20 @@ public class TurnManager : ServiceBehaviour
         m_Turn = value;
         OnTurnChanged?.Invoke(new TurnChangedArgs
         {
-            turn = value
+            turn = value,
+            team = GetCurrentTeam()
         });
+    }
+
+
+    private static TeamType GetCurrentTeam()
+    {
+        var instance = GetInstance();
+        return (TeamType) ((instance.m_Turn - 1) % TeamCount);
+    }
+
+    private static TurnManager GetInstance()
+    {
+        return ServiceLocator.Get<TurnManager>();
     }
 }
