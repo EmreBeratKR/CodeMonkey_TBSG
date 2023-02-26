@@ -10,23 +10,26 @@ public class TurnManager : ServiceBehaviour
     }
     
     
-    private int m_Turn = 1;
+    private int m_Turn;
 
 
     private void Start()
     {
-        OnTurnChanged?.Invoke(new TurnChangedArgs
-        {
-            turn = m_Turn
-        });
+        SetTurn(1);
     }
 
     public void NextTurn()
     {
-        m_Turn += 1;
+        SetTurn(m_Turn + 1);
+    }
+
+
+    private void SetTurn(int value)
+    {
+        m_Turn = value;
         OnTurnChanged?.Invoke(new TurnChangedArgs
         {
-            turn = m_Turn
+            turn = value
         });
     }
 }
