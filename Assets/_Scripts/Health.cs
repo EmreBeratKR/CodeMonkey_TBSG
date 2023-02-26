@@ -3,10 +3,14 @@ using UnityEngine;
 
 public class Health : MonoBehaviour
 {
+    private const int FullHealth = 100;
+    
+    
     public event Action<HealthChangedArgs> OnHealthChanged;
     public struct HealthChangedArgs
     {
         public int health;
+        public float healthNormalized;
     }
 
     public event Action<TakeDamageArgs> OnTakeDamage; 
@@ -39,8 +43,7 @@ public class Health : MonoBehaviour
 
     private void RestoreHealth()
     {
-        const int fullHealth = 100;
-        SetHealth(fullHealth);
+        SetHealth(FullHealth);
     }
     
     private void SetHealth(int value)
@@ -49,7 +52,8 @@ public class Health : MonoBehaviour
         m_Health = value;
         OnHealthChanged?.Invoke(new HealthChangedArgs
         {
-            health = value
+            health = value,
+            healthNormalized = Mathf.InverseLerp(0f, FullHealth, value)
         });
 
         if (m_Health <= 0)

@@ -62,7 +62,7 @@ namespace UI
             SetBusyVisual(args.isBusy);
         }
         
-        private void OnAnyUnitUsedCommandPoint(Unit.AnyUnitUsedCommandPointArgs args)
+        private void OnAnyUnitUsedCommandPoint(Unit.UnitUsedCommandPointArgs args)
         {
             var unitCommander = GetUnitCommander();
             

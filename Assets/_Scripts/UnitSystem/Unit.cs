@@ -18,11 +18,13 @@ namespace UnitSystem
         [SerializeField] private TeamType teamType;
         
 
-        public static event Action<AnyUnitUsedCommandPointArgs> OnAnyUnitUsedCommandPoint;
-        public struct AnyUnitUsedCommandPointArgs
+        public static event Action<UnitUsedCommandPointArgs> OnAnyUnitUsedCommandPoint;
+        public struct UnitUsedCommandPointArgs
         {
             public Unit unit;
         }
+
+        public event Action OnUnitUsedCommandPoint;
         
         
         public GridPosition GridPosition { get; private set; }
@@ -145,10 +147,12 @@ namespace UnitSystem
         private void SetCommandPoint(int value)
         {
             CommandPoint = value;
-            OnAnyUnitUsedCommandPoint?.Invoke(new AnyUnitUsedCommandPointArgs
+            OnAnyUnitUsedCommandPoint?.Invoke(new UnitUsedCommandPointArgs
             {
                 unit = this
             });
+            
+            OnUnitUsedCommandPoint?.Invoke();
         }
         
         private GridPosition GetGridPosition()
