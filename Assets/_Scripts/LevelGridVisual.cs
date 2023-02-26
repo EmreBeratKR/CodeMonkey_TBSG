@@ -6,7 +6,40 @@ using UnityEngine;
 
 public class LevelGridVisual : MonoBehaviour
 {
-    private void Update()
+    private void Awake()
+    {
+        UnitCommander.OnSelectedCommandChanged += UnitCommander_OnSelectedCommandChanged;
+        UnitCommander.OnBusyChanged += UnitCommander_OnBusyChanged;
+        
+        TurnManager.OnTurnChanged += TurnManager_OnTurnChanged;
+    }
+
+    private void OnDestroy()
+    {
+        UnitCommander.OnSelectedCommandChanged -= UnitCommander_OnSelectedCommandChanged;
+        UnitCommander.OnBusyChanged -= UnitCommander_OnBusyChanged;
+        
+        TurnManager.OnTurnChanged -= TurnManager_OnTurnChanged;
+    }
+
+    
+    private void UnitCommander_OnSelectedCommandChanged(UnitCommander.SelectedCommandChangedArgs args)
+    {
+        UpdateVisual();
+    }
+
+    private void UnitCommander_OnBusyChanged(UnitCommander.BusyChangedArgs args)
+    {
+        UpdateVisual();
+    }
+    
+    private void TurnManager_OnTurnChanged(TurnManager.TurnChangedArgs obj)
+    {
+        UpdateVisual();
+    }
+    
+
+    private void UpdateVisual()
     {
         var unitCommander = GetUnitCommander();
 
@@ -22,7 +55,7 @@ public class LevelGridVisual : MonoBehaviour
         
         Show(allValidGridPosition);
     }
-
+    
 
     private static void Show(IEnumerator<GridPosition> gridPositions)
     {
