@@ -33,13 +33,19 @@ public class LevelGridVisual : MonoBehaviour
         UpdateVisual();
     }
     
-    private void TurnManager_OnTurnChanged(TurnManager.TurnChangedArgs obj)
+    private void TurnManager_OnTurnChanged(TurnManager.TurnChangedArgs args)
     {
-        UpdateVisual();
+        if (args.team == TeamType.Player)
+        {
+            UpdateVisual();
+            return;
+        }
+        
+        HideAll();
     }
     
 
-    private void UpdateVisual()
+    private static void UpdateVisual()
     {
         var unitCommander = GetUnitCommander();
 
