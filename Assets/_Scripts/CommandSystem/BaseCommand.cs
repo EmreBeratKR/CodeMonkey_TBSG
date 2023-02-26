@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using EmreBeratKR.ServiceLocator;
 using GridSystem;
 using UnitSystem;
 using UnityEngine;
@@ -69,6 +70,57 @@ namespace CommandSystem
             isActive = false;
             m_OnCompletedCallback?.Invoke();
             OnComplete?.Invoke();
+        }
+        
+        protected IEnumerator<GridPosition> GetAllGridPositionWithinRange(float range)
+        {
+            var maxDistanceInt = Mathf.FloorToInt(range);
+            var unitGridPosition = Unit.GridPosition;
+            var maxGridPosition = unitGridPosition + new GridPosition(1, 0, 1) * maxDistanceInt;
+            var minGridPosition = unitGridPosition - new GridPosition(1, 0, 1) * maxDistanceInt;
+            
+            var levelGrid = GetLevelGrid();
+
+            for (var x = minGridPosition.x; x <= maxGridPosition.x; x++)
+            {
+                for (var y = maxGridPosition.y; y <= maxGridPosition.y; y++)
+                {
+                    for (var z = minGridPosition.z; z <= maxGridPosition.z; z++)
+                    {
+                        var gridPosition = new GridPosition(x, y, z);
+
+                        if (!levelGrid.IsValidGridPosition(gridPosition)) continue;
+                        
+                        var isGreaterThanMaxDistance = GridPosition
+                            .Distance(unitGridPosition, gridPosition) > range;
+                        
+                        if (isGreaterThanMaxDistance) continue;
+
+                        yield return gridPosition;
+                    }
+                }
+            }
+        }
+        
+        protected void LookTowardsPosition(Vector3 targetPosition)
+        {
+            var direction = targetPosition - transform.position;
+
+            const float rotateSpeed = 25f;
+            transform.rotation = Quaternion
+                .Lerp(transform.rotation, Quaternion.LookRotation(direction), Time.deltaTime * rotateSpeed);
+        }
+
+        protected void LookTowardsUnit(Unit unit)
+        {
+            var levelGrid = GetLevelGrid();
+            LookTowardsPosition(levelGrid.GetWorldPosition(unit.GridPosition));
+        }
+
+
+        protected static LevelGrid GetLevelGrid()
+        {
+            return ServiceLocator.Get<LevelGrid>();
         }
     }
 }

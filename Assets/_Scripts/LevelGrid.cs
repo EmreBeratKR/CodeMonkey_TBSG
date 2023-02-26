@@ -67,12 +67,20 @@ public class LevelGrid : ServiceBehaviour
         gridObject.RemoveUnit(unit);
     }
 
+    public bool HasAnyUnitAtGridPosition(GridPosition gridPosition)
+    {
+        var gridObject = m_Grid.GetGridObject(gridPosition);
+        return gridObject.HasAnyUnit();
+    }
+
+    public Unit GetUnitAtGridPosition(GridPosition gridPosition)
+    {
+        var gridObject = m_Grid.GetGridObject(gridPosition);
+        return gridObject.GetUnit();
+    }
+
     public bool IsValidGridPosition(GridPosition gridPosition)
     {
-        if (!m_Grid.IsValidGridPosition(gridPosition)) return false;
-        
-        var gridObject = m_Grid.GetGridObject(gridPosition);
-
-        return !gridObject.HasAnyUnit();
+        return m_Grid.IsValidGridPosition(gridPosition);
     }
 }

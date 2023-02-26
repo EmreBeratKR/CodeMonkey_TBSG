@@ -96,6 +96,11 @@ namespace UnitSystem
             return CommandPoint >= command.GetRequiredCommandPoint();
         }
 
+        public TeamType GetTeamType()
+        {
+            return teamType;
+        }
+
         public bool IsInsideTeam(TeamType team)
         {
             return teamType == team;

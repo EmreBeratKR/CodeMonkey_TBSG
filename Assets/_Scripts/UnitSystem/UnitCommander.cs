@@ -141,7 +141,8 @@ namespace UnitSystem
             
             ExecuteCommand(command, new CommandArgs
             {
-                positionToMove = levelGrid.GetWorldPosition(mouseGridPosition)
+                positionToMove = levelGrid.GetWorldPosition(mouseGridPosition),
+                unitToShoot = levelGrid.GetUnitAtGridPosition(mouseGridPosition)
             });
             
             return true;

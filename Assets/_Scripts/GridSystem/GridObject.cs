@@ -35,6 +35,13 @@ namespace GridSystem
             return m_Units.Count > 0;
         }
 
+        public Unit GetUnit()
+        {
+            return m_Units.Count > 0 
+                ? m_Units[0]
+                : null;
+        }
+
         public void SetActiveVisual(bool value)
         {
             m_Visual.SetActive(value);
