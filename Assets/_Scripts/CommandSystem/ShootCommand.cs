@@ -8,6 +8,9 @@ namespace CommandSystem
 {
     public class ShootCommand : BaseCommand
     {
+        private const float MaxShootDistance = 4.5f;
+        
+        
         [SerializeField] private Weapon weapon;
 
 
@@ -47,10 +50,8 @@ namespace CommandSystem
 
         public override IEnumerator<GridPosition> GetAllValidGridPositions()
         {
-            const float maxShootDistance = 5f;
-
             var levelGrid = GetLevelGrid();
-            var allGridPositionsWithinRange = GetAllGridPositionWithinRange(maxShootDistance);
+            var allGridPositionsWithinRange = GetAllGridPositionWithinRange(MaxShootDistance);
 
             while (allGridPositionsWithinRange.MoveNext())
             {
@@ -66,7 +67,35 @@ namespace CommandSystem
             
             allGridPositionsWithinRange.Dispose();
         }
-        
+
+        public override IEnumerator<(GridPosition, GridVisual.State)> GetAllGridPositionStates()
+        {
+            var levelGrid = GetLevelGrid();
+            var allGridPositionsWithinRange = GetAllGridPositionWithinRange(MaxShootDistance);
+
+            while (allGridPositionsWithinRange.MoveNext())
+            {
+                var gridPosition = allGridPositionsWithinRange.Current;
+                var unit = levelGrid.GetUnitAtGridPosition(gridPosition);
+
+                if (!unit)
+                {
+                    yield return (gridPosition, GridVisual.State.DarkBlue);
+                    continue;
+                }
+
+                if (unit.IsInsideTeam(Unit.GetTeamType()))
+                {
+                    yield return (gridPosition, GridVisual.State.DarkBlue);
+                    continue;
+                }
+
+                yield return (gridPosition, GridVisual.State.Blue);
+            }
+            
+            allGridPositionsWithinRange.Dispose();
+        }
+
         public override string GetName()
         {
             const string commandName = "Shoot";

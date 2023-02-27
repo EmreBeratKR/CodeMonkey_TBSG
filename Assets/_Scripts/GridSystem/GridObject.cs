@@ -42,9 +42,9 @@ namespace GridSystem
                 : null;
         }
 
-        public void SetActiveVisual(bool value)
+        public void SetVisualState(GridVisual.State state)
         {
-            m_Visual.SetActive(value);
+            m_Visual.SetState(state);
         }
 
         public void SpawnVisual(GridVisual visualPrefab, Transform parent = null)

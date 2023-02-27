@@ -57,20 +57,21 @@ public class LevelGridVisual : MonoBehaviour
         
         var allValidGridPosition = unitCommander
             .SelectedCommand
-            .GetAllValidGridPositions();
+            .GetAllGridPositionStates();
         
         Show(allValidGridPosition);
     }
     
 
-    private static void Show(IEnumerator<GridPosition> gridPositions)
+    private static void Show(IEnumerator<(GridPosition, GridVisual.State)> gridPositions)
     {
         var levelGrid = GetLevelGrid();
 
         while (gridPositions.MoveNext())
         {
-            var gridPosition = gridPositions.Current;
-            levelGrid.GetGridObject(gridPosition).SetActiveVisual(true);
+            var gridPosition = gridPositions.Current.Item1;
+            var gridVisualState = gridPositions.Current.Item2;
+            levelGrid.GetGridObject(gridPosition).SetVisualState(gridVisualState);
         }
         
         gridPositions.Dispose();
@@ -89,7 +90,7 @@ public class LevelGridVisual : MonoBehaviour
                     var gridPosition = new GridPosition(x, y, z);
                     levelGrid
                         .GetGridObject(gridPosition)
-                        .SetActiveVisual(false);
+                        .SetVisualState(GridVisual.State.Clear);
                 }
             }
         }

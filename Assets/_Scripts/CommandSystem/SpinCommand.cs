@@ -32,6 +32,11 @@ namespace CommandSystem
             yield return Unit.GridPosition;
         }
 
+        public override IEnumerator<(GridPosition, GridVisual.State)> GetAllGridPositionStates()
+        {
+            yield return (Unit.GridPosition, GridVisual.State.Green);
+        }
+
         public override string GetName()
         {
             const string commandName = "Spin";

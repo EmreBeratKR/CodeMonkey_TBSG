@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using EmreBeratKR.ServiceLocator;
 using GridSystem;
 using UnityEngine;
 
@@ -8,6 +7,9 @@ namespace CommandSystem
 {
     public class MoveCommand : BaseCommand
     {
+        private const float MaxMoveDistance = 4f;
+        
+        
         private Vector3 m_PositionToMove;
 
 
@@ -33,10 +35,8 @@ namespace CommandSystem
         
         public override IEnumerator<GridPosition> GetAllValidGridPositions()
         {
-            const float maxMoveDistance = 2f;
-
             var levelGrid = GetLevelGrid();
-            var allGridPositionWithinRange = GetAllGridPositionWithinRange(maxMoveDistance);
+            var allGridPositionWithinRange = GetAllGridPositionWithinRange(MaxMoveDistance);
 
             while (allGridPositionWithinRange.MoveNext())
             {
@@ -49,7 +49,28 @@ namespace CommandSystem
             
             allGridPositionWithinRange.Dispose();
         }
-        
+
+        public override IEnumerator<(GridPosition, GridVisual.State)> GetAllGridPositionStates()
+        {
+            var levelGrid = GetLevelGrid();
+            var allGridPositionWithinRange = GetAllGridPositionWithinRange(MaxMoveDistance);
+
+            while (allGridPositionWithinRange.MoveNext())
+            {
+                var gridPosition = allGridPositionWithinRange.Current;
+
+                if (levelGrid.HasAnyUnitAtGridPosition(gridPosition))
+                {
+                    yield return (gridPosition, GridVisual.State.Orange);
+                    continue;
+                }
+
+                yield return (gridPosition, GridVisual.State.White);
+            }
+            
+            allGridPositionWithinRange.Dispose();
+        }
+
         public override string GetName()
         {
             const string commandName = "Move";

@@ -30,7 +30,8 @@ namespace CommandSystem
 
         public abstract void Execute(CommandArgs args, Action onCompleted);
         public abstract IEnumerator<GridPosition> GetAllValidGridPositions();
-        
+        public abstract IEnumerator<(GridPosition, GridVisual.State)> GetAllGridPositionStates();
+
         public virtual string GetName()
         {
             return GetType().Name;
@@ -90,11 +91,12 @@ namespace CommandSystem
                         var gridPosition = new GridPosition(x, y, z);
 
                         if (!levelGrid.IsValidGridPosition(gridPosition)) continue;
+
+                        var deltaGridPosition = gridPosition - unitGridPosition;
+                        var distanceFactor = Mathf.Abs(deltaGridPosition.x) + Mathf.Abs(deltaGridPosition.z);
+                        var isTooFarAway = distanceFactor > maxDistanceInt;
                         
-                        var isGreaterThanMaxDistance = GridPosition
-                            .Distance(unitGridPosition, gridPosition) > range;
-                        
-                        if (isGreaterThanMaxDistance) continue;
+                        if (isTooFarAway) continue;
 
                         yield return gridPosition;
                     }

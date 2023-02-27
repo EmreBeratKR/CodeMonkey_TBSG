@@ -366,7 +366,6 @@ GameObject:
   - component: {fileID: 1508567380}
   - component: {fileID: 1508567383}
   - component: {fileID: 1508567382}
-  - component: {fileID: 1508567381}
   m_Layer: 7
   m_Name: Quad
   m_TagString: Untagged
@@ -383,7 +382,7 @@ Transform:
   m_GameObject: {fileID: 1508567379}
   m_LocalRotation: {x: 0.7071064, y: -0, z: -0, w: 0.7071072}
   m_LocalPosition: {x: 0, y: 0.02, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.75, y: 0.75, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 597317936}
@@ -439,20 +438,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!64 &1508567381
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1508567379}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 4
-  m_Convex: 0
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!1 &1067317033996018525
 GameObject:
   m_ObjectHideFlags: 0

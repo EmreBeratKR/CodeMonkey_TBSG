@@ -8,38 +8,17 @@ namespace GridSystem
     {
         [SerializeField] private Renderer visual;
         
-        
-        public void SetActive(bool value)
-        {
-            if (value)
-            {
-                SetState(GetState());
-                return;
-            }
-            
-            SetState(GridVisualState.Unreachable);
-        }
 
-
-        private GridVisualState GetState()
-        {
-            var unitCommander = GetUnitCommander();
-            var selectedCommand = unitCommander.SelectedCommand;
-            
-            return selectedCommand.Unit.HasEnoughCommandPoint(selectedCommand) switch
-            {
-                false => GridVisualState.NotEnoughCommandPoint,
-                _ => GridVisualState.Available
-            };
-        }
-        
-        private void SetState(GridVisualState state)
+        public void SetState(State state)
         {
             visual.material.color = state switch
             {
-                GridVisualState.Available => Color.white,
-                GridVisualState.NotEnoughCommandPoint => Color.red,
-                GridVisualState.Unreachable => Color.black
+                State.Clear => Color.black,
+                State.White => Color.white,
+                State.Orange => new Color(1f, 0.5f, 0f),
+                State.Blue => new Color(0f, 0.8f, 1f),
+                State.DarkBlue => new Color(0f, 0.4f, 0.5f),
+                State.Green => Color.green,
             };
         }
 
@@ -50,11 +29,14 @@ namespace GridSystem
         }
 
 
-        private enum GridVisualState
+        public enum State
         {
-            Available,
-            NotEnoughCommandPoint,
-            Unreachable
+            Clear,
+            White,
+            Orange,
+            Blue,
+            DarkBlue,
+            Green,
         }
     }
 }
