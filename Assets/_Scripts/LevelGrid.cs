@@ -11,7 +11,7 @@ public class LevelGrid : ServiceBehaviour
     [SerializeField] private bool spawnDebugGridObjects = true;
         
         
-    private readonly Grid m_Grid = new(10, 10);
+    private readonly Grid m_Grid = new(20, 20);
 
 
     private void Start()

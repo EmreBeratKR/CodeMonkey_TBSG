@@ -1,13 +1,14 @@
 using System;
 using System.Collections.Generic;
 using GridSystem;
+using UI;
 using UnityEngine;
 
 namespace CommandSystem
 {
     public class MoveCommand : BaseCommand
     {
-        private const float MaxMoveDistance = 4f;
+        private const float MoveRange = 4f;
         
         
         private Vector3 m_PositionToMove;
@@ -36,7 +37,7 @@ namespace CommandSystem
         public override IEnumerator<GridPosition> GetAllValidGridPositions()
         {
             var levelGrid = GetLevelGrid();
-            var allGridPositionWithinRange = GetAllGridPositionWithinRange(MaxMoveDistance);
+            var allGridPositionWithinRange = GetAllGridPositionWithinRange(MoveRange);
 
             while (allGridPositionWithinRange.MoveNext())
             {
@@ -53,7 +54,7 @@ namespace CommandSystem
         public override IEnumerator<(GridPosition, GridVisual.State)> GetAllGridPositionStates()
         {
             var levelGrid = GetLevelGrid();
-            var allGridPositionWithinRange = GetAllGridPositionWithinRange(MaxMoveDistance);
+            var allGridPositionWithinRange = GetAllGridPositionWithinRange(MoveRange);
 
             while (allGridPositionWithinRange.MoveNext())
             {
@@ -75,6 +76,45 @@ namespace CommandSystem
         {
             const string commandName = "Move";
             return commandName;
+        }
+
+        public override float GetBenefitValue(CommandArgs args)
+        {
+            const float rewardPerNonTeamUnit = 20f;
+
+            if (!Unit.TryGetCommand(out ShootCommand shootCommand)) return 0f;
+
+            var levelGrid = GetLevelGrid();
+            var gridPosition = levelGrid.GetGridPosition(args.positionToMove);
+            var gridPositions = GetAllGridPositionWithinRange(gridPosition, shootCommand.GetRange());
+
+            var nearByNonTeamUnit = 0;
+            
+            while (gridPositions.MoveNext())
+            {
+                var unitAtGridPosition = levelGrid.GetUnitAtGridPosition(gridPositions.Current);
+                
+                if (!unitAtGridPosition) continue;
+                
+                if (Unit.IsInsideTeam(unitAtGridPosition.GetTeamType())) continue;
+
+                nearByNonTeamUnit += 1;
+            }
+            
+            gridPositions.Dispose();
+
+            var allUnits = UnitManager.GetAllUnits();
+            var totalSqrDistanceToNonTeamUnits = 0f;
+
+            foreach (var unit in allUnits)
+            {
+                if (Unit.IsInsideTeam(unit.GetTeamType())) continue;
+
+                var sqrDistance = GridPosition.SqrDistance(unit.GridPosition, gridPosition);
+                totalSqrDistanceToNonTeamUnits += sqrDistance;
+            }
+
+            return rewardPerNonTeamUnit * nearByNonTeamUnit + 1000f / totalSqrDistanceToNonTeamUnits;
         }
 
 

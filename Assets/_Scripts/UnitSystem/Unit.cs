@@ -163,6 +163,11 @@ namespace UnitSystem
             health.Damage(value);
         }
 
+        public int GetHealth()
+        {
+            return health.GetHealth();
+        }
+
 
         private void UseCommandPoint(BaseCommand command)
         {

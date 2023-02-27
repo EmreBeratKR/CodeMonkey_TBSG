@@ -60,7 +60,7 @@ public class GameCamera : ServiceBehaviour
             motion.x -= 1f;
         }
 
-        const float moveSpeed = 5f;
+        const float moveSpeed = 10f;
         motion = motion.normalized * (Time.deltaTime * moveSpeed);
         motion = Quaternion.Euler(Vector3.up * m_Yaw) * motion;
         mainTarget.position += motion;

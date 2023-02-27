@@ -39,6 +39,11 @@ public class Health : MonoBehaviour
             damage = value
         });
     }
+
+    public int GetHealth()
+    {
+        return m_Health;
+    }
     
 
     private void RestoreHealth()

@@ -9,6 +9,9 @@ namespace CommandSystem
 {
     public abstract class BaseCommand : MonoBehaviour
     {
+        protected const float MassiveBenefitPenalty = 9999f;
+        
+        
         public event Action OnStart;
         public event Action OnComplete;
 
@@ -80,10 +83,14 @@ namespace CommandSystem
         
         protected IEnumerator<GridPosition> GetAllGridPositionWithinRange(float range)
         {
+            return GetAllGridPositionWithinRange(Unit.GridPosition, range);
+        }
+
+        protected IEnumerator<GridPosition> GetAllGridPositionWithinRange(GridPosition center, float range)
+        {
             var maxDistanceInt = Mathf.FloorToInt(range);
-            var unitGridPosition = Unit.GridPosition;
-            var maxGridPosition = unitGridPosition + new GridPosition(1, 0, 1) * maxDistanceInt;
-            var minGridPosition = unitGridPosition - new GridPosition(1, 0, 1) * maxDistanceInt;
+            var maxGridPosition = center + new GridPosition(1, 0, 1) * maxDistanceInt;
+            var minGridPosition = center - new GridPosition(1, 0, 1) * maxDistanceInt;
             
             var levelGrid = GetLevelGrid();
 
@@ -97,7 +104,7 @@ namespace CommandSystem
 
                         if (!levelGrid.IsValidGridPosition(gridPosition)) continue;
 
-                        var deltaGridPosition = gridPosition - unitGridPosition;
+                        var deltaGridPosition = gridPosition - center;
                         var distanceFactor = Mathf.Abs(deltaGridPosition.x) + Mathf.Abs(deltaGridPosition.z);
                         var isTooFarAway = distanceFactor > maxDistanceInt;
                         

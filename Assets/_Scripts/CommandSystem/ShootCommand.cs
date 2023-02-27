@@ -8,7 +8,7 @@ namespace CommandSystem
 {
     public class ShootCommand : BaseCommand
     {
-        private const float MaxShootDistance = 4.5f;
+        private const float ShootRange = 4.5f;
         
         
         [SerializeField] private Weapon weapon;
@@ -51,7 +51,7 @@ namespace CommandSystem
         public override IEnumerator<GridPosition> GetAllValidGridPositions()
         {
             var levelGrid = GetLevelGrid();
-            var allGridPositionsWithinRange = GetAllGridPositionWithinRange(MaxShootDistance);
+            var allGridPositionsWithinRange = GetAllGridPositionWithinRange(ShootRange);
 
             while (allGridPositionsWithinRange.MoveNext())
             {
@@ -71,7 +71,7 @@ namespace CommandSystem
         public override IEnumerator<(GridPosition, GridVisual.State)> GetAllGridPositionStates()
         {
             var levelGrid = GetLevelGrid();
-            var allGridPositionsWithinRange = GetAllGridPositionWithinRange(MaxShootDistance);
+            var allGridPositionsWithinRange = GetAllGridPositionWithinRange(ShootRange);
 
             while (allGridPositionsWithinRange.MoveNext())
             {
@@ -100,6 +100,31 @@ namespace CommandSystem
         {
             const string commandName = "Shoot";
             return commandName;
+        }
+
+        public override float GetBenefitValue(CommandArgs args)
+        {
+            const float baseBenefitValue = 100f;
+            var benefitValue = baseBenefitValue;
+
+            if (!args.unitToShoot)
+            {
+                var noUnitPenalty = MassiveBenefitPenalty;
+                benefitValue -= noUnitPenalty;
+            }
+
+            else
+            {
+                var healthBonus = 25f / args.unitToShoot.GetHealth();
+                benefitValue += healthBonus;
+            }
+
+            return benefitValue;
+        }
+
+        public float GetRange()
+        {
+            return ShootRange;
         }
 
 
