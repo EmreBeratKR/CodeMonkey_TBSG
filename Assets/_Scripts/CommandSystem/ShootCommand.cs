@@ -11,11 +11,14 @@ namespace CommandSystem
         [SerializeField] private Weapon weapon;
 
 
+        public static event Action<ShootArgs> OnAnyShoot; 
+
         public event Action<ShootArgs> OnShoot;
         public struct ShootArgs
         {
             public Unit shooterUnit;
             public Unit shotUnit;
+            public Vector3 impactOffset;
         }
         
         
@@ -97,13 +100,18 @@ namespace CommandSystem
                     m_Timer = shootTimer;
                     weapon.Shoot(m_UnitToShoot, () =>
                     {
-                        const int damage = 40;
-                        m_UnitToShoot.Damage(damage);
-                        OnShoot?.Invoke(new ShootArgs
+                        var args = new ShootArgs
                         {
                             shooterUnit = Unit,
-                            shotUnit = m_UnitToShoot
-                        });
+                            shotUnit = m_UnitToShoot,
+                            impactOffset = GetImpactOffset(Unit, m_UnitToShoot)
+                        };
+                        OnShoot?.Invoke(args);
+                        OnAnyShoot?.Invoke(args);
+                        
+                        const int damage = 40;
+                        m_UnitToShoot.Damage(damage);
+                        
                         m_Timer = 0f;
                     });
                     break;
@@ -128,6 +136,15 @@ namespace CommandSystem
             if (m_Timer > 0f) return;
             
             OnTimerDone();
+        }
+        
+        
+        private static Vector3 GetImpactOffset(Unit shooterUnit, Unit shotUnit)
+        {
+            var directionNormalized = (shooterUnit.GetPosition() - shotUnit.GetPosition())
+                .normalized;
+            const float offsetDistance = 1f;
+            return directionNormalized * offsetDistance;
         }
 
 

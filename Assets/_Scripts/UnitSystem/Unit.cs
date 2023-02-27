@@ -32,6 +32,7 @@ namespace UnitSystem
 
 
         private BaseCommand[] m_Commands;
+        private Vector3 m_LastImpactOffset;
 
 
         private void Awake()
@@ -39,6 +40,8 @@ namespace UnitSystem
             m_Commands = GetComponents<BaseCommand>();
 
             health.OnDead += OnDead;
+            
+            ShootCommand.OnAnyShoot += OnAnyUnitShoot;
             
             TurnManager.OnTurnChanged += TurnManager_OnTurnChanged;
         }
@@ -52,6 +55,8 @@ namespace UnitSystem
         private void OnDestroy()
         {
             health.OnDead -= OnDead;
+
+            ShootCommand.OnAnyShoot -= OnAnyUnitShoot;
             
             TurnManager.OnTurnChanged -= TurnManager_OnTurnChanged;
         }
@@ -69,6 +74,14 @@ namespace UnitSystem
             levelGrid.RemoveUnitFromGridPosition(this, GridPosition);
             Die();
         }
+
+        private void OnAnyUnitShoot(ShootCommand.ShootArgs args)
+        {
+            if (args.shotUnit == this)
+            {
+                m_LastImpactOffset = args.impactOffset;
+            }
+        }
         
         private void TurnManager_OnTurnChanged(TurnManager.TurnChangedArgs args)
         {
@@ -76,6 +89,11 @@ namespace UnitSystem
         }
 
 
+        public Vector3 GetPosition()
+        {
+            return transform.position;
+        }
+        
         public BaseCommand GetDefaultCommand()
         {
             return m_Commands[0];
@@ -177,7 +195,7 @@ namespace UnitSystem
         {
             Destroy(gameObject);
             var ragdoll = Instantiate(ragdollPrefab, transform.position, transform.rotation);
-            ragdoll.Setup(rootBone);
+            ragdoll.Setup(rootBone, m_LastImpactOffset);
         }
 
         private static LevelGrid GetLevelGrid()

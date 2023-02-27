@@ -9,12 +9,13 @@ public class Ragdoll : MonoBehaviour
     [SerializeField] private Animator animator;
 
 
-    public void Setup(Transform targetRootBone)
+    public void Setup(Transform targetRootBone, Vector3 impactOffset)
     {
         MatchAllBones(targetRootBone, rootBone);
         
         const float force = 150f;
-        ApplyExplosiveForce(force, transform.position);
+        var explosionPosition = transform.position + impactOffset;
+        ApplyExplosiveForce(force, explosionPosition);
         TriggerSweep();
     }
 
