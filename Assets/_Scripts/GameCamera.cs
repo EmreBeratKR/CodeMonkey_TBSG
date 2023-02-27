@@ -1,19 +1,23 @@
 using Cinemachine;
+using EmreBeratKR.ServiceLocator;
 using UnityEngine;
 
-public class GameCamera : MonoBehaviour
+[ServiceSceneLoad(ServiceSceneLoadMode.Destroy)]
+public class GameCamera : ServiceBehaviour
 {
     [SerializeField] private CinemachineVirtualCamera mainVirtualCamera;
     [SerializeField] private Transform mainTarget;
 
 
     private CinemachineTransposer m_MainCameraTransposer;
+    private CinemachineVirtualCamera m_CurrentVirtualCamera;
     private float m_Pitch;
     private float m_Yaw;
 
 
     private void Awake()
     {
+        m_CurrentVirtualCamera = mainVirtualCamera;
         m_MainCameraTransposer = mainVirtualCamera.GetCinemachineComponent<CinemachineTransposer>();
     }
 
@@ -24,6 +28,8 @@ public class GameCamera : MonoBehaviour
 
     private void Update()
     {
+        if (!IsUsingMainVirtualCamera()) return;
+        
         HandleMovement();
         HandleRotation();
         HandleZoom();
@@ -84,5 +90,40 @@ public class GameCamera : MonoBehaviour
         var followOffset = m_MainCameraTransposer.m_FollowOffset;
         followOffset.z = Mathf.Clamp(followOffset.z + Input.mouseScrollDelta.y, -maxZoom, -minZoom);
         m_MainCameraTransposer.m_FollowOffset = followOffset;
+    }
+
+    private bool IsUsingMainVirtualCamera()
+    {
+        return m_CurrentVirtualCamera == mainVirtualCamera;
+    }
+    
+    
+    public static void ActivateCamera(CinemachineVirtualCamera virtualCamera)
+    {
+        SetVirtualCamera(virtualCamera);
+        virtualCamera.gameObject.SetActive(true);
+    }
+
+    public static void DeactivateCamera(CinemachineVirtualCamera virtualCamera)
+    {
+        UseMainVirtualCamera();
+        virtualCamera.gameObject.SetActive(false);
+    }
+
+
+    private static void UseMainVirtualCamera()
+    {
+        var instance = GetInstance();
+        instance.m_CurrentVirtualCamera = instance.mainVirtualCamera;
+    }
+    
+    private static void SetVirtualCamera(CinemachineVirtualCamera virtualCamera)
+    {
+        GetInstance().m_CurrentVirtualCamera = virtualCamera;
+    }
+    
+    private static GameCamera GetInstance()
+    {
+        return ServiceLocator.Get<GameCamera>();
     }
 }

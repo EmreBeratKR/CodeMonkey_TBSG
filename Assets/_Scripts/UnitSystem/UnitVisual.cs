@@ -16,17 +16,13 @@ namespace UnitSystem
 
         private void Start()
         {
-            var moveCommand = unit.GetCommand<MoveCommand>();
-
-            if (moveCommand)
+            if (unit.TryGetCommand(out MoveCommand moveCommand))
             {
                 moveCommand.OnStart += OnStartMoving;
                 moveCommand.OnComplete += OnCompleteMoving;
             }
 
-            var shootCommand = unit.GetCommand<ShootCommand>();
-
-            if (shootCommand)
+            if (unit.TryGetCommand(out ShootCommand shootCommand))
             {
                 shootCommand.OnShoot += OnShoot;
             }
@@ -36,17 +32,13 @@ namespace UnitSystem
 
         private void OnDestroy()
         {
-            var moveCommand = unit.GetCommand<MoveCommand>();
-
-            if (moveCommand)
+            if (unit.TryGetCommand(out MoveCommand moveCommand))
             {
                 moveCommand.OnStart -= OnStartMoving;
                 moveCommand.OnComplete -= OnCompleteMoving;
             }
-            
-            var shootCommand = unit.GetCommand<ShootCommand>();
 
-            if (shootCommand)
+            if (unit.TryGetCommand(out ShootCommand shootCommand))
             {
                 shootCommand.OnShoot -= OnShoot;
             }

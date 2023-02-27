@@ -117,6 +117,13 @@ namespace UnitSystem
             return null;
         }
 
+        public bool TryGetCommand<T>(out T command)
+            where T : BaseCommand
+        {
+            command = GetCommand<T>();
+            return command;
+        }
+
         public bool TryUseCommandPoint(BaseCommand command)
         {
             if (!HasEnoughCommandPoint(command)) return false;
