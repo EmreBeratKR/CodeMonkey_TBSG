@@ -24,6 +24,10 @@ namespace UnitSystem
             public Unit unit;
         }
 
+        public static event Action<Unit> OnAnyUnitSpawned; 
+        public static event Action<Unit> OnAnyUnitDead;
+
+        
         public event Action OnUnitUsedCommandPoint;
         
         
@@ -48,9 +52,7 @@ namespace UnitSystem
 
         private void Start()
         {
-            RestoreCommandPoints();
-            GridPosition = GetGridPosition();
-            GetLevelGrid().AddUnitToGridPosition(this, GridPosition);
+            Spawn();
         }
 
         private void OnDestroy()
@@ -202,11 +204,22 @@ namespace UnitSystem
             GridPosition = gridPosition;
         }
 
+        private void Spawn()
+        {
+            RestoreCommandPoints();
+            GridPosition = GetGridPosition();
+            GetLevelGrid().AddUnitToGridPosition(this, GridPosition);
+            
+            OnAnyUnitSpawned?.Invoke(this);
+        }
+
         private void Die()
         {
             Destroy(gameObject);
             var ragdoll = Instantiate(ragdollPrefab, transform.position, transform.rotation);
             ragdoll.Setup(rootBone, m_LastImpactOffset);
+            
+            OnAnyUnitDead?.Invoke(this);
         }
 
         private static LevelGrid GetLevelGrid()

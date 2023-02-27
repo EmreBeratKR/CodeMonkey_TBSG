@@ -41,6 +41,11 @@ namespace CommandSystem
         {
             return 1;
         }
+
+        public virtual float GetBenefitValue(CommandArgs args)
+        {
+            return 0f;
+        }
         
         public bool IsValidGridPosition(GridPosition gridPosition)
         {
