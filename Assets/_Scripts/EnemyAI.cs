@@ -40,7 +40,7 @@ public class EnemyAI : BehaviourTree, IService
             return !m_IsBusy && !CanPerformMoreCommand();
         });
         var performCommandNode = new SequenceNode();
-        var thinkNode = new WaitForSecondsNode(1f);
+        var thinkNode = new WaitForSecondsNode(0.25f);
         var executeCommandNode = new ActionNode(() =>
         {
             return TryExecuteCommand() ? NodeState.Succeed : NodeState.Failure;

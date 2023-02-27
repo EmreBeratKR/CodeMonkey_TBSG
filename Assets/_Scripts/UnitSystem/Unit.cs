@@ -9,7 +9,7 @@ namespace UnitSystem
 {
     public class Unit : MonoBehaviour
     {
-        private const int MaxCommandPoint = 2;
+        private const int MaxCommandPoint = 3;
 
 
         [SerializeField] private Ragdoll ragdollPrefab;

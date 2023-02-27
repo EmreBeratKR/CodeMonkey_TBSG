@@ -104,7 +104,7 @@ namespace CommandSystem
 
         public override float GetBenefitValue(CommandArgs args)
         {
-            const float baseBenefitValue = 100f;
+            const float baseBenefitValue = 500f;
             var benefitValue = baseBenefitValue;
 
             if (!args.unitToShoot)
@@ -115,7 +115,7 @@ namespace CommandSystem
 
             else
             {
-                var healthBonus = 25f / args.unitToShoot.GetHealth();
+                var healthBonus = 50f / args.unitToShoot.GetHealth();
                 benefitValue += healthBonus;
             }
 
@@ -163,7 +163,7 @@ namespace CommandSystem
                         OnShoot?.Invoke(args);
                         OnAnyShoot?.Invoke(args);
                         
-                        const int damage = 40;
+                        const int damage = 10;
                         m_UnitToShoot.Damage(damage);
                         
                         m_Timer = 0f;

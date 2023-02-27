@@ -8,7 +8,7 @@ namespace CommandSystem
 {
     public class MoveCommand : BaseCommand
     {
-        private const float MoveRange = 4f;
+        private const float MoveRange = 3f;
         
         
         private Vector3 m_PositionToMove;
@@ -80,7 +80,7 @@ namespace CommandSystem
 
         public override float GetBenefitValue(CommandArgs args)
         {
-            const float rewardPerNonTeamUnit = 20f;
+            const float rewardPerNonTeamUnit = 10f;
 
             if (!Unit.TryGetCommand(out ShootCommand shootCommand)) return 0f;
 
