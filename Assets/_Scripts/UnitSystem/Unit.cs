@@ -85,7 +85,10 @@ namespace UnitSystem
         
         private void TurnManager_OnTurnChanged(TurnManager.TurnChangedArgs args)
         {
-            RestoreCommandPoints();
+            if (args.team == teamType)
+            {
+                RestoreCommandPoints();
+            }
         }
 
 
