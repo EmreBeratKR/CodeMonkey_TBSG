@@ -48,6 +48,7 @@ namespace UnitSystem
 
         private void Start()
         {
+            RestoreCommandPoints();
             GridPosition = GetGridPosition();
             GetLevelGrid().AddUnitToGridPosition(this, GridPosition);
         }

@@ -1,15 +1,15 @@
-using System;
+using AI;
 using EmreBeratKR.ServiceLocator;
-using UnityEngine;
 
-public class EnemyAI : ServiceBehaviour
+public class EnemyAI : BehaviourTree, IService
 {
-    private bool m_IsActive;
-    private float m_Timer;
-
-
-    private void Awake()
+    private TeamType m_TeamType;
+    
+    
+    protected override void Awake()
     {
+        base.Awake();
+        
         TurnManager.OnTurnChanged += TurnManager_OnTurnChanged;
     }
 
@@ -18,37 +18,30 @@ public class EnemyAI : ServiceBehaviour
         TurnManager.OnTurnChanged -= TurnManager_OnTurnChanged;
     }
 
-    private void Update()
-    {
-        if (!m_IsActive) return;
-        
-        TickTimer();
-    }
-
 
     private void TurnManager_OnTurnChanged(TurnManager.TurnChangedArgs args)
     {
-        if (args.team != TeamType.Enemy) return;
-
-        m_Timer = 1f;
-        m_IsActive = true;
+        m_TeamType = args.team;
     }
 
-
-    private void OnTimerDone()
-    {
-        var turnManager = GetTurnManager();
-        turnManager.NextTurn();
-        m_IsActive = false;
-    }
     
-    private void TickTimer()
+    protected override Node SetupTree()
     {
-        m_Timer -= Time.deltaTime;
+        var rootNode = new SequenceNode();
+
+        var waitForTurnNode = new WaitUntilNode(() => m_TeamType == TeamType.Enemy);
+        var thinkNode = new WaitForSecondsNode(1f);
+        var giveTurnNode = new ActionNode(() =>
+        {
+            GetTurnManager().NextTurn();
+            return NodeState.Succeed;
+        });
         
-        if (m_Timer > 0f) return;
-        
-        OnTimerDone();
+        rootNode.AddNode(waitForTurnNode);
+        rootNode.AddNode(thinkNode);
+        rootNode.AddNode(giveTurnNode);
+
+        return rootNode;
     }
 
 
