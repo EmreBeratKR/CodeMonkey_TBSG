@@ -2,7 +2,6 @@ using EmreBeratKR.ServiceLocator;
 using GridSystem;
 using UnitSystem;
 using UnityEngine;
-using Grid = GridSystem.Grid;
 
 public class LevelGrid : ServiceBehaviour
 {
@@ -11,16 +10,25 @@ public class LevelGrid : ServiceBehaviour
     [SerializeField] private bool spawnDebugGridObjects = true;
         
         
-    private readonly Grid m_Grid = new(20, 20);
+    private readonly Grid<GridObject> m_Grid = new(20, 20);
 
 
     private void Start()
     {
-        m_Grid.SpawnGridVisuals(gridVisualPrefab, transform);
+        m_Grid.SpawnGridObjects((grid, gridPosition) =>
+        {
+            var newGridObject = new GridObject(grid, gridPosition);
+            newGridObject.SpawnVisual(gridVisualPrefab, transform);
+            return newGridObject;
+        });
         
         if (spawnDebugGridObjects)
         {
-            m_Grid.SpawnDebugGridObjects(gridDebugObjectPrefab, transform);
+            m_Grid.SpawnDebugGridObjects((gridPosition) =>
+            {
+                var gridDebugObject = Instantiate(gridDebugObjectPrefab, GetWorldPosition(gridPosition), Quaternion.identity, transform);
+                gridDebugObject.SetGridObject(GetGridObject(gridPosition));
+            });
         }
     }
 

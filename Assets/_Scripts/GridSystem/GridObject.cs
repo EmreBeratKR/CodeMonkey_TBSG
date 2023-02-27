@@ -9,11 +9,11 @@ namespace GridSystem
     {
         private GridPosition m_GridPosition;
         private GridVisual m_Visual;
-        private Grid m_Grid;
+        private Grid<GridObject> m_Grid;
         private readonly List<Unit> m_Units = new();
 
 
-        public GridObject(Grid grid, GridPosition gridPosition)
+        public GridObject(Grid<GridObject> grid, GridPosition gridPosition)
         {
             m_Grid = grid;
             m_GridPosition = gridPosition;

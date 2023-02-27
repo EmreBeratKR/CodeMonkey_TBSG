@@ -1,15 +1,17 @@
+using System;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace GridSystem
 {
-    public class Grid
+    public class Grid<T>
     {
         private const float DefaultCellSize = 1f;
         private const int DefaultDimensionSize = 1;
         private static readonly Vector3 DefaultOrigin = Vector3.zero;
 
 
-        private GridObject[,,] m_GridObjects;
+        private T[,,] m_GridObjects;
         private Vector3 m_Origin;
         private float m_CellSize;
         private int m_SizeX;
@@ -67,12 +69,12 @@ namespace GridSystem
             return new GridPosition(x, y, z);
         }
 
-        public GridObject GetGridObject(int x, int y, int z)
+        public T GetGridObject(int x, int y, int z)
         {
             return m_GridObjects[x, y, z];
         }
 
-        public GridObject GetGridObject(GridPosition gridPosition)
+        public T GetGridObject(GridPosition gridPosition)
         {
             return GetGridObject(gridPosition.x, gridPosition.y, gridPosition.z);
         }
@@ -101,7 +103,7 @@ namespace GridSystem
             return gridPosition.z >= 0 && gridPosition.z < m_SizeZ;
         }
 
-        public void SpawnGridVisuals(GridVisual visualPrefab, Transform parent = null)
+        public void SpawnGridObjects(Func<Grid<T>, GridPosition, T> createFunc)
         {
             for (var x = 0; x < m_SizeX; x++)
             {
@@ -110,15 +112,14 @@ namespace GridSystem
                     for (var z = 0; z < m_SizeZ; z++)
                     {
                         var gridPosition = new GridPosition(x, y, z);
-                        var newGridObject = new GridObject(this, gridPosition);
-                        newGridObject.SpawnVisual(visualPrefab, parent);
+                        var newGridObject = createFunc(this, gridPosition);
                         m_GridObjects[x, y, z] = newGridObject;
                     }
                 }
             }
         }
 
-        public void SpawnDebugGridObjects(GridDebugObject prefab, Transform parent = null)
+        public void SpawnDebugGridObjects(Action<GridPosition> spawnAction)
         {
             for (var x = 0; x < m_SizeX; x++)
             {
@@ -126,9 +127,7 @@ namespace GridSystem
                 {
                     for (var z = 0; z < m_SizeZ; z++)
                     {
-                        var gridDebugObject = Object
-                            .Instantiate(prefab, GetWorldPosition(x, y, z), Quaternion.identity, parent);
-                        gridDebugObject.SetGridObject(GetGridObject(x, y, z));
+                        spawnAction(new GridPosition(x, y, z));
                     }
                 }
             }
@@ -143,7 +142,7 @@ namespace GridSystem
             m_CellSize = cellSize;
             m_Origin = origin;
             
-            m_GridObjects = new GridObject[sizeX, sizeY, sizeZ];
+            m_GridObjects = new T[sizeX, sizeY, sizeZ];
         }
     }
 }
