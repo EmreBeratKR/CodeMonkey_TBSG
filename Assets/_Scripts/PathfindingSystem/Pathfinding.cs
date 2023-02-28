@@ -27,6 +27,7 @@ namespace PathfindingSystem
             {
                 var pathNode = new PathNode();
                 pathNode.GridPosition = gridPosition;
+                pathNode.GridObject = ServiceLocator.Get<LevelGrid>().GetGridObject(gridPosition);
                 return pathNode;
             });
 
@@ -69,6 +70,8 @@ namespace PathfindingSystem
 
                 foreach (var neighbourPathNode in neighbourPathNodes)
                 {
+                    if (!neighbourPathNode.IsWalkable()) continue;
+                    
                     if (VisitedNodes.Contains(neighbourPathNode)) continue;
                     
                     var gCost = pathNode.GCost + CalculateHCost(pathNode, neighbourPathNode);

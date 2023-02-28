@@ -9,11 +9,17 @@ namespace PathfindingSystem
         public int FCost { get; private set; }
         public PathNode PreviousPathNode { get; set; }
         public GridPosition GridPosition { get; set; }
+        public GridObject GridObject { get; set; }
 
 
         public void CalculateFCost()
         {
             FCost = GCost + HCost;
+        }
+
+        public bool IsWalkable()
+        {
+            return !GridObject.HasAnyUnit();
         }
     }
 }
