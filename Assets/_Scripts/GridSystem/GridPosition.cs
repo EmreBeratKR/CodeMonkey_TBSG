@@ -5,7 +5,7 @@ namespace GridSystem
     public struct GridPosition : IEquatable<GridPosition>
     {
         public static readonly GridPosition Zero = new(0, 0, 0);
-        public static readonly GridPosition One = new(1, 1, 1); 
+        public static readonly GridPosition One = new(1, 0, 1);
         
         
         public int x;

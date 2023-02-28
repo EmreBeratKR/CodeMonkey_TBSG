@@ -5,12 +5,16 @@ using UnityEngine;
 
 public class LevelGrid : ServiceBehaviour
 {
+    public const int SizeX = 20;
+    public const int SizeZ = 20;
+    
+    
     [SerializeField] private GridVisual gridVisualPrefab;
     [SerializeField] private GridDebugObject gridDebugObjectPrefab;
     [SerializeField] private bool spawnDebugGridObjects = true;
         
         
-    private readonly Grid<GridObject> m_Grid = new(20, 20);
+    private readonly Grid<GridObject> m_Grid = new(SizeX, SizeZ);
 
 
     private void Start()
