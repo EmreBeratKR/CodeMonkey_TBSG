@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace UnitSystem
 {
-    public class Unit : MonoBehaviour
+    public class Unit : MonoBehaviour, IObstacle
     {
         private const int MaxCommandPoint = 3;
 

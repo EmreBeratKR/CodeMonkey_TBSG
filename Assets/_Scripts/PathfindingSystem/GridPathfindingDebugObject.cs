@@ -8,6 +8,7 @@ namespace PathfindingSystem
         [SerializeField] private TMP_Text gCostField;
         [SerializeField] private TMP_Text hCostField;
         [SerializeField] private TMP_Text fCostField;
+        [SerializeField] private SpriteRenderer isWalkableSprite;
 
 
         private PathNode m_PathNode;
@@ -26,6 +27,10 @@ namespace PathfindingSystem
             gCostField.text = m_PathNode.GCost.ToString();
             hCostField.text = m_PathNode.HCost.ToString();
             fCostField.text = m_PathNode.FCost.ToString();
+
+            isWalkableSprite.color = m_PathNode.IsWalkable()
+                ? Color.green
+                : Color.red;
         }
 
 

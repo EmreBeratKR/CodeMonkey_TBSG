@@ -19,7 +19,7 @@ namespace PathfindingSystem
 
         public bool IsWalkable()
         {
-            return !GridObject.HasAnyUnit();
+            return GridObject.IsWalkable();
         }
     }
 }
