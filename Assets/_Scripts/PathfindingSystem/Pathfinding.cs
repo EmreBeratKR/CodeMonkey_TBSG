@@ -102,6 +102,8 @@ namespace PathfindingSystem
                 path.Add(Grid.GetWorldPosition(currentPathNode.GridPosition));
                 currentPathNode = currentPathNode.PreviousPathNode;
             }
+            
+            path.Reverse();
 
             return path;
         }
