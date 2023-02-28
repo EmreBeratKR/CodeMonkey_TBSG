@@ -29,7 +29,7 @@ namespace CommandSystem
         public override void Execute(CommandArgs args, Action onCompleted)
         {
             m_Path = Pathfinding.GetPath(Unit.GridPosition, args.gridPositionToMove);
-            m_PathIndex = 0;
+            m_PathIndex = 1;
             StartCommand(onCompleted);
         }
         
