@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using GridSystem;
+using PathfindingSystem;
 using UI;
 using UnityEngine;
 
@@ -11,26 +12,24 @@ namespace CommandSystem
         private const float MoveRange = 3f;
         
         
-        private Vector3 m_PositionToMove;
+        private IReadOnlyList<Vector3> m_Path;
+        private int m_PathIndex;
 
-
-        private void Start()
-        {
-            m_PositionToMove = transform.position;
-        }
-
+        
         private void Update()
         {
             if (!isActive) return;
-            
-            MoveTowardsTargetPosition();
-            LookTowardsPosition(m_PositionToMove);
+
+            var position = GetCurrentPathPosition();
+            MoveTowardsPosition(position);
+            LookTowardsPosition(position);
         }
 
 
         public override void Execute(CommandArgs args, Action onCompleted)
         {
-            m_PositionToMove = args.positionToMove;
+            m_Path = Pathfinding.GetPath(Unit.GridPosition, args.gridPositionToMove);
+            m_PathIndex = 0;
             StartCommand(onCompleted);
         }
         
@@ -85,7 +84,7 @@ namespace CommandSystem
             if (!Unit.TryGetCommand(out ShootCommand shootCommand)) return 0f;
 
             var levelGrid = GetLevelGrid();
-            var gridPosition = levelGrid.GetGridPosition(args.positionToMove);
+            var gridPosition = args.gridPositionToMove;
             var gridPositions = GetAllGridPositionWithinRange(gridPosition, shootCommand.GetRange());
 
             var nearByNonTeamUnit = 0;
@@ -118,26 +117,41 @@ namespace CommandSystem
         }
 
 
-        private void MoveTowardsTargetPosition()
+        private void MoveTowardsPosition(Vector3 position)
         {
-            if (HasReachedToTargetPosition())
+            if (HasReachedToPosition(position))
             {
-                CompleteCommand();
-                return;
+                m_PathIndex += 1;
+
+                if (IsPathCompleted())
+                {
+                    CompleteCommand();
+                    return;
+                }
             }
 
-            var directionNormalized = (m_PositionToMove - transform.position).normalized;
+            var directionNormalized = (position - transform.position).normalized;
             const float moveSpeed = 4f;
             var motion = directionNormalized * (Time.deltaTime * moveSpeed);
             transform.position += motion;
         }
 
-        private bool HasReachedToTargetPosition()
+        private Vector3 GetCurrentPathPosition()
+        {
+            return m_Path[m_PathIndex];
+        }
+
+        private bool HasReachedToPosition(Vector3 position)
         {
             const float maxSqrDistanceError = 0.001f;
-            var sqrDistanceToTarget = Vector3.SqrMagnitude(m_PositionToMove - transform.position);
+            var sqrDistanceToTarget = Vector3.SqrMagnitude(position - transform.position);
 
             return sqrDistanceToTarget <= maxSqrDistanceError;
+        }
+
+        private bool IsPathCompleted()
+        {
+            return m_PathIndex >= m_Path.Count;
         }
     }
 }
