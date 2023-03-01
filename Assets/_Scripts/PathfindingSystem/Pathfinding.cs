@@ -42,10 +42,11 @@ namespace PathfindingSystem
         }
 
 
-        public static IReadOnlyList<Vector3> GetPath(GridPosition startGridPosition, GridPosition endGridPosition)
+        public static IReadOnlyList<Vector3> GetPath(GridPosition startGridPosition, GridPosition endGridPosition, out int cost)
         {
             CleanUp();
 
+            cost = 0;
             var startPathNode = Grid.GetGridObject(startGridPosition);
             var endPathNode = Grid.GetGridObject(endGridPosition);
 
@@ -60,7 +61,7 @@ namespace PathfindingSystem
 
                 if (pathNode == endPathNode)
                 {
-                    return CalculatePathFromEndPathNode(pathNode);
+                    return CalculatePathFromEndPathNode(pathNode, out cost);
                 }
 
                 NodesToVisit.Remove(pathNode);
@@ -88,14 +89,35 @@ namespace PathfindingSystem
                     NodesToVisit.Add(neighbourPathNode);
                 }
             }
-
+            
             return EmptyPath;
         }
 
+        public static IReadOnlyList<Vector3> GetPath(GridPosition startGridPosition, GridPosition endGridPosition)
+        {
+            return GetPath(startGridPosition, endGridPosition, out _);
+        }
 
-        private static IReadOnlyList<Vector3> CalculatePathFromEndPathNode(PathNode endPathNode)
+        public static bool HasValidPath(GridPosition startGridPosition, GridPosition endGridPosition, out int cost)
+        {
+            return !ReferenceEquals(GetPath(startGridPosition, endGridPosition, out cost), EmptyPath);
+        }
+
+        public static bool HasValidPath(GridPosition startGridPosition, GridPosition endGridPosition)
+        {
+            return HasValidPath(startGridPosition, endGridPosition, out _);
+        }
+
+        public static float GetCostMultiplier()
+        {
+            return CostPerStraightMove;
+        }
+
+
+        private static IReadOnlyList<Vector3> CalculatePathFromEndPathNode(PathNode endPathNode, out int cost)
         {
             var path = new List<Vector3>();
+            cost = endPathNode.FCost;
 
             var currentPathNode = endPathNode;
             while (true)

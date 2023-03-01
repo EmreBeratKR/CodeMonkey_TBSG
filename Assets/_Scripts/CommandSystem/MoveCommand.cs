@@ -42,6 +42,12 @@ namespace CommandSystem
                 var gridPosition = allGridPositionWithinRange.Current;
 
                 if (LevelGrid.HasAnyUnitAtGridPosition(gridPosition)) continue;
+                
+                if (!Pathfinding.HasValidPath(Unit.GridPosition, gridPosition, out var cost)) continue;
+
+                var outOfRange = cost / Pathfinding.GetCostMultiplier() > MoveRange; 
+                
+                if (outOfRange) continue;
 
                 yield return gridPosition;
             }
@@ -60,6 +66,20 @@ namespace CommandSystem
                 if (LevelGrid.HasAnyUnitAtGridPosition(gridPosition))
                 {
                     yield return (gridPosition, GridVisual.State.Orange);
+                    continue;
+                }
+                
+                if (!Pathfinding.HasValidPath(Unit.GridPosition, gridPosition, out var cost))
+                {
+                    yield return (gridPosition, GridVisual.State.Clear);
+                    continue;
+                }
+                
+                var outOfRange = cost / Pathfinding.GetCostMultiplier() > MoveRange;
+
+                if (outOfRange)
+                {
+                    yield return (gridPosition, GridVisual.State.Clear);
                     continue;
                 }
 

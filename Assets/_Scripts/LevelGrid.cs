@@ -5,8 +5,8 @@ using UnityEngine;
 
 public class LevelGrid : ServiceBehaviour
 {
-    public const int SizeX = 20;
-    public const int SizeZ = 20;
+    public const int SizeX = 19;
+    public const int SizeZ = 32;
     
     
     [SerializeField] private GridVisual gridVisualPrefab;

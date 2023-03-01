@@ -8,7 +8,7 @@ namespace UnitSystem
 {
     public class Unit : MonoBehaviour, IObstacle
     {
-        private const int MaxCommandPoint = 3;
+        private const int MaxCommandPoint = 10;
 
 
         [SerializeField] private Ragdoll ragdollPrefab;
