@@ -47,9 +47,7 @@ namespace CommandSystem
                     continue;
                 }
 
-                var notEnoughCommandPoint = Unit.CommandPoint < GetRequiredCommandPoint();
-
-                if (notEnoughCommandPoint)
+                if (!HasEnoughCommandPoint())
                 {
                     yield return (gridPosition, GridVisual.State.Red, CommandStatus.NotEnoughCommandPoint);
                     continue;

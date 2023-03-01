@@ -59,7 +59,7 @@ namespace UI
 
         public void UpdateInteractable()
         {
-            var interactable = !m_Command || m_Command.Unit.HasEnoughCommandPoint(m_Command);
+            var interactable = !m_Command || m_Command.HasEnoughCommandPoint();
             SetInteractable(interactable);
         }
 

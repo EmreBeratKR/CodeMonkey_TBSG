@@ -29,6 +29,12 @@ namespace CommandSystem
 
         public override IEnumerator<(GridPosition, GridVisual.State, CommandStatus)> GetAllGridPositionStates()
         {
+            if (!HasEnoughCommandPoint())
+            {
+                yield return (Unit.GridPosition, GridVisual.State.Red, CommandStatus.NotEnoughCommandPoint);
+                yield break;
+            }
+            
             yield return (Unit.GridPosition, GridVisual.State.Green, CommandStatus.Ok);
         }
 

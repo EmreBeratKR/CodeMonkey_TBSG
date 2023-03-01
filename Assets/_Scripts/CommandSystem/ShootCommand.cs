@@ -55,6 +55,13 @@ namespace CommandSystem
             while (allGridPositionsWithinRange.MoveNext())
             {
                 var gridPosition = allGridPositionsWithinRange.Current;
+
+                if (!HasEnoughCommandPoint())
+                {
+                    yield return (gridPosition, GridVisual.State.Red, CommandStatus.NotEnoughCommandPoint);
+                    continue;
+                }
+                
                 var unit = LevelGrid.GetUnitAtGridPosition(gridPosition);
 
                 if (!unit)

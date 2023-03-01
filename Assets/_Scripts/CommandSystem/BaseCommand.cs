@@ -98,7 +98,12 @@ namespace CommandSystem
             return CommandStatus.NotFound;
         }
         
-        
+        public bool HasEnoughCommandPoint()
+        {
+            return Unit.HasEnoughCommandPoint(this);
+        }
+
+
         protected void StartCommand(Action onCompleteCallback)
         {
             isActive = true;
@@ -112,7 +117,7 @@ namespace CommandSystem
             m_OnCompletedCallback?.Invoke();
             OnComplete?.Invoke();
         }
-        
+
         protected IEnumerator<GridPosition> GetAllGridPositionWithinRange(float range)
         {
             return GetAllGridPositionWithinRange(Unit.GridPosition, range);

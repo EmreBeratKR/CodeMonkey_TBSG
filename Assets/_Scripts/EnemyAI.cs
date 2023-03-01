@@ -108,7 +108,7 @@ public class EnemyAI : BehaviourTree, IService
 
             foreach (var command in commands)
             {
-                if (!unit.HasEnoughCommandPoint(command)) continue;
+                if (!command.HasEnoughCommandPoint()) continue;
                 
                 m_CommandsBuffer.Add(command);
             }
