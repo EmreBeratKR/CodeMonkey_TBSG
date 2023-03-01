@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using TMPro;
 using UnitSystem;
 using UnityEngine;
@@ -6,19 +7,19 @@ namespace UI
 {
     public class UnitCommanderUI : MonoBehaviour
     {
+        [SerializeField] private CommandButtonUI commandButtonPrefab;
+        [SerializeField] private Transform commandButtonsParent;
         [SerializeField] private GameObject commandsPanel;
         [SerializeField] private GameObject busyPanel;
         [SerializeField] private GameObject waitForYourTurnPanel;
         [SerializeField] private TMP_Text commandPointField;
         
         
-        private CommandButtonUI[] m_CommandButtons;
+        private readonly List<CommandButtonUI> m_CommandButtons = new();
 
 
         private void Awake()
         {
-            m_CommandButtons = GetComponentsInChildren<CommandButtonUI>(true);
-            
             UnitCommander.OnSelectedUnitChanged += UnitCommander_OnSelectedUnitChanged;
             UnitCommander.OnBusyChanged += UnitCommander_OnBusyChanged;
             
@@ -42,14 +43,14 @@ namespace UI
             SetBusyVisual(false);
             SetCommandPoint(args.unit.CommandPoint);
             
+            HideAllCommandButtons();
             var commands = args.unit.GetAllCommands();
             
-            for (var i = 0; i < m_CommandButtons.Length; i++)
+            for (var i = 0; i < commands.Count; i++)
             {
-                if (i >= commands.Count)
+                if (i >= m_CommandButtons.Count)
                 {
-                    m_CommandButtons[i].ClearCommand();
-                    continue;
+                    SpawnCommandButton();
                 }
                 
                 m_CommandButtons[i].SetCommand(commands[i]);
@@ -78,6 +79,20 @@ namespace UI
             SetWaitForYourTurnVisual(args.team != TeamType.Player);
         }
 
+
+        private void SpawnCommandButton()
+        {
+            var commandButton = Instantiate(commandButtonPrefab, commandButtonsParent);
+            m_CommandButtons.Add(commandButton);
+        }
+
+        private void HideAllCommandButtons()
+        {
+            foreach (var commandButton in m_CommandButtons)
+            {
+                commandButton.Hide();
+            }
+        }
 
         private void SetBusyVisual(bool value)
         {

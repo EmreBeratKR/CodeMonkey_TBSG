@@ -145,8 +145,9 @@ public class EnemyAI : BehaviourTree, IService
             var gridPosition = allValidGridPositions.Current;
             var args = new CommandArgs
             {
-                gridPositionToMove = gridPosition,
-                unitToShoot = LevelGrid.GetUnitAtGridPosition(gridPosition)
+                gridPosition = gridPosition,
+                gridObject = LevelGrid.GetGridObject(gridPosition),
+                unit = LevelGrid.GetUnitAtGridPosition(gridPosition)
             };
             var benefitValue = command.GetBenefitValue(args);
             

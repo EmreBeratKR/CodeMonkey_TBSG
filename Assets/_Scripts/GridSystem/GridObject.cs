@@ -2,10 +2,11 @@ using System.Collections.Generic;
 using System.Text;
 using UnitSystem;
 using UnityEngine;
+using WeaponSystem;
 
 namespace GridSystem
 {
-    public class GridObject
+    public class GridObject : IBulletTarget
     {
         private const int StaticObstacleBitmask = 1 << 8;
         private static readonly Collider[] ColliderBuffer = new Collider[10];
@@ -26,6 +27,11 @@ namespace GridSystem
         }
 
 
+        public Vector3 GetHitPosition()
+        {
+            return GetWorldPosition();
+        }
+        
         public Vector3 GetWorldPosition()
         {
             return m_Grid.GetWorldPosition(m_GridPosition);

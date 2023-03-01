@@ -1,12 +1,12 @@
 using GridSystem;
 using UnitSystem;
-using UnityEngine;
 
 namespace CommandSystem
 {
     public struct CommandArgs
     {
-        public GridPosition gridPositionToMove;
-        public Unit unitToShoot;
+        public GridPosition gridPosition;
+        public GridObject gridObject;
+        public Unit unit;
     }
 }

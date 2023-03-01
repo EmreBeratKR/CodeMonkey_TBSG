@@ -3,16 +3,15 @@ using System.Collections.Generic;
 using GridSystem;
 using UnitSystem;
 using UnityEngine;
+using WeaponSystem;
 
 namespace CommandSystem
 {
     public class ShootCommand : BaseCommand
     {
-        private const float ShootRange = 4.5f;
+        private const float ShootRange = 7f;
 
-        private static readonly RaycastHit[] RaycastHitBuffer = new RaycastHit[10];
-        
-        
+
         [SerializeField] private Weapon weapon;
 
 
@@ -44,56 +43,21 @@ namespace CommandSystem
         public override void Execute(CommandArgs args, Action onCompleted)
         {
             const float aimTimer = 0.5f;
-            m_UnitToShoot = args.unitToShoot;
+            m_UnitToShoot = args.unit;
             m_State = State.Aim;
             m_Timer = aimTimer;
+            weapon.Equip();
             StartCommand(onCompleted);
         }
 
         public override IEnumerator<(GridPosition, GridVisual.State, CommandStatus)> GetAllGridPositionStates()
         {
-            var allGridPositionsWithinRange = GetAllGridPositionWithinRange(ShootRange);
-
-            while (allGridPositionsWithinRange.MoveNext())
-            {
-                var gridPosition = allGridPositionsWithinRange.Current;
-
-                if (!HasEnoughCommandPoint())
-                {
-                    yield return (gridPosition, GridVisual.State.Red, CommandStatus.NotEnoughCommandPoint);
-                    continue;
-                }
-                
-                var unit = LevelGrid.GetUnitAtGridPosition(gridPosition);
-
-                if (!unit)
-                {
-                    yield return (gridPosition, GridVisual.State.DarkBlue, CommandStatus.TargetNotFound);
-                    continue;
-                }
-
-                if (unit.IsInsideTeam(Unit.GetTeamType()))
-                {
-                    yield return (gridPosition, GridVisual.State.DarkBlue, CommandStatus.FriendlyFire);
-                    continue;
-                }
-
-                if (IsBlockedByObstacle(unit))
-                {
-                    yield return (gridPosition, GridVisual.State.Orange, CommandStatus.Blocked);
-                    continue;
-                }
-
-                yield return (gridPosition, GridVisual.State.Blue, CommandStatus.Ok);
-            }
-            
-            allGridPositionsWithinRange.Dispose();
+            return GetAllProjectileGridPositionStates(ShootRange);
         }
 
         public override string GetName()
         {
-            const string commandName = "Shoot";
-            return commandName;
+            return weapon.name;
         }
 
         public override float GetBenefitValue(CommandArgs args)
@@ -101,7 +65,7 @@ namespace CommandSystem
             const float baseBenefitValue = 500f;
             var benefitValue = baseBenefitValue;
 
-            if (!args.unitToShoot)
+            if (!args.unit)
             {
                 var noUnitPenalty = MassiveBenefitPenalty;
                 benefitValue -= noUnitPenalty;
@@ -109,7 +73,7 @@ namespace CommandSystem
 
             else
             {
-                var healthBonus = 50f / args.unitToShoot.GetHealth();
+                var healthBonus = 50f / args.unit.GetHealth();
                 benefitValue += healthBonus;
             }
 
@@ -119,6 +83,17 @@ namespace CommandSystem
         public float GetRange()
         {
             return ShootRange;
+        }
+        
+        
+        protected override void OnSelected()
+        {
+            weapon.Equip();
+        }
+
+        protected override void OnDeselected()
+        {
+            weapon.UnEquip();
         }
 
 
@@ -186,27 +161,7 @@ namespace CommandSystem
             OnTimerDone();
         }
 
-        private bool IsBlockedByObstacle(Unit unit)
-        {
-            var origin = Unit.GetPosition() + Vector3.up;
-            var direction = (unit.GetPosition() - Unit.GetPosition()).normalized;
-            var distance = Vector3.Distance(unit.GetPosition(), Unit.GetPosition());
-            var hitCount = Physics
-                .RaycastNonAlloc(origin, direction, RaycastHitBuffer, distance, Physics.AllLayers, QueryTriggerInteraction.Collide);
 
-            for (var i = 0; i < hitCount; i++)
-            {
-                if (!RaycastHitBuffer[i].collider.TryGetComponent(out IObstacle obstacle)) continue;
-
-                if (obstacle is not Unit unitObstacle) return true;
-                
-                if (unit != unitObstacle && Unit != unitObstacle) return true;
-            }
-
-            return false;
-        }
-        
-        
         private static Vector3 GetImpactOffset(Unit shooterUnit, Unit shotUnit)
         {
             var directionNormalized = (shooterUnit.GetPosition() - shotUnit.GetPosition())

@@ -17,7 +17,8 @@ namespace UnitSystem
         public static event Action<SelectedCommandChangedArgs> OnSelectedCommandChanged;
         public struct SelectedCommandChangedArgs
         {
-            public BaseCommand command;
+            public BaseCommand oldCommand;
+            public BaseCommand newCommand;
         }
 
         public static event Action<CommandExecutedArgs> OnCommandExecuted;
@@ -155,8 +156,9 @@ namespace UnitSystem
             
             ExecuteCommand(command, new CommandArgs
             {
-                gridPositionToMove = mouseGridPosition,
-                unitToShoot = LevelGrid.GetUnitAtGridPosition(mouseGridPosition)
+                gridPosition = mouseGridPosition,
+                gridObject = LevelGrid.GetGridObject(mouseGridPosition),
+                unit = LevelGrid.GetUnitAtGridPosition(mouseGridPosition)
             });
             
             return true;
@@ -180,11 +182,13 @@ namespace UnitSystem
             var instance = GetInstance();
             
             if (command == instance.m_SelectedCommand) return;
-            
+
+            var oldCommand = instance.m_SelectedCommand;
             instance.m_SelectedCommand = command;
             OnSelectedCommandChanged?.Invoke(new SelectedCommandChangedArgs
             {
-                command = command
+                oldCommand = oldCommand,
+                newCommand = command
             });
         }
 

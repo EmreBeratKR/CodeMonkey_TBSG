@@ -9,6 +9,7 @@ public class GameCamera : ServiceBehaviour
 {
     [SerializeField] private CinemachineVirtualCamera mainVirtualCamera;
     [SerializeField] private CinemachineImpulseSource rifleFireImpulseSource;
+    [SerializeField] private CinemachineImpulseSource explosionImpulseSource;
     [SerializeField] private Transform mainTarget;
 
 
@@ -24,6 +25,8 @@ public class GameCamera : ServiceBehaviour
         m_MainCameraTransposer = mainVirtualCamera.GetCinemachineComponent<CinemachineTransposer>();
         
         ShootCommand.OnAnyShoot += ShootCommand_OnAnyShoot;
+
+        ThrowGrenadeCommand.OnAnyGrenadeExplode += ThrowGrenadeCommand_OnAnyGrenadeExplode;
     }
 
     private void Start()
@@ -34,6 +37,8 @@ public class GameCamera : ServiceBehaviour
     private void OnDestroy()
     {
         ShootCommand.OnAnyShoot -= ShootCommand_OnAnyShoot;
+        
+        ThrowGrenadeCommand.OnAnyGrenadeExplode -= ThrowGrenadeCommand_OnAnyGrenadeExplode;
     }
 
     private void Update()
@@ -49,6 +54,11 @@ public class GameCamera : ServiceBehaviour
     private void ShootCommand_OnAnyShoot(ShootCommand.ShootArgs args)
     {
         rifleFireImpulseSource.GenerateImpulse();
+    }
+
+    private void ThrowGrenadeCommand_OnAnyGrenadeExplode()
+    {
+        explosionImpulseSource.GenerateImpulse();
     }
     
 

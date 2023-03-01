@@ -28,7 +28,7 @@ namespace CommandSystem
 
         public override void Execute(CommandArgs args, Action onCompleted)
         {
-            m_Path = Pathfinding.GetPath(Unit.GridPosition, args.gridPositionToMove);
+            m_Path = Pathfinding.GetPath(Unit.GridPosition, args.gridPosition);
             m_PathIndex = 1;
             StartCommand(onCompleted);
         }
@@ -91,7 +91,7 @@ namespace CommandSystem
 
             if (!Unit.TryGetCommand(out ShootCommand shootCommand)) return 0f;
             
-            var gridPosition = args.gridPositionToMove;
+            var gridPosition = args.gridPosition;
             var gridPositions = GetAllGridPositionWithinRange(gridPosition, shootCommand.GetRange());
 
             var nearByNonTeamUnit = 0;

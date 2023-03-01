@@ -26,13 +26,14 @@ namespace UI
 
         private void OnSelectedCommandChanged(UnitCommander.SelectedCommandChangedArgs args)
         {
-            var isSelected = m_Command == args.command;
+            var isSelected = m_Command == args.newCommand;
             SetActiveSelectedVisual(isSelected);
         }
 
         private void OnDestroy()
         {
             button.onClick.RemoveListener(OnClicked);
+            UnitCommander.OnSelectedCommandChanged -= OnSelectedCommandChanged;
         }
 
 
@@ -51,7 +52,7 @@ namespace UI
             UpdateInteractable();
         }
 
-        public void ClearCommand()
+        public void Hide()
         {
             m_Command = null;
             gameObject.SetActive(false);

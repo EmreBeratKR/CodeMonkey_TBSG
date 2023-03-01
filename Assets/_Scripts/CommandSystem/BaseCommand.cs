@@ -10,6 +10,8 @@ namespace CommandSystem
     {
         protected const float MassiveBenefitPenalty = 9999f;
         
+        private static readonly RaycastHit[] RaycastHitBuffer = new RaycastHit[10];
+        
         
         public event Action OnStart;
         public event Action OnComplete;
@@ -27,8 +29,29 @@ namespace CommandSystem
         protected virtual void Awake()
         {
             Unit = GetComponent<Unit>();
+
+            UnitCommander.OnSelectedCommandChanged += UnitCommand_OnSelectedCommandChanged;
         }
 
+        protected virtual void OnDestroy()
+        {
+            UnitCommander.OnSelectedCommandChanged -= UnitCommand_OnSelectedCommandChanged;
+        }
+
+
+        private void UnitCommand_OnSelectedCommandChanged(UnitCommander.SelectedCommandChangedArgs args)
+        {
+            if (args.newCommand == this)
+            {
+                OnSelected();
+            }
+
+            if (args.oldCommand == this)
+            {
+                OnDeselected();
+            }
+        }
+        
 
         public abstract void Execute(CommandArgs args, Action onCompleted);
         public abstract IEnumerator<(GridPosition, GridVisual.State, CommandStatus)> GetAllGridPositionStates();
@@ -104,6 +127,16 @@ namespace CommandSystem
         }
 
 
+        protected virtual void OnSelected()
+        {
+            
+        }
+
+        protected virtual void OnDeselected()
+        {
+            
+        }
+        
         protected void StartCommand(Action onCompleteCallback)
         {
             isActive = true;
@@ -151,6 +184,46 @@ namespace CommandSystem
             }
         }
         
+        protected IEnumerator<(GridPosition, GridVisual.State, CommandStatus)> GetAllProjectileGridPositionStates(float range)
+        {
+            var allGridPositionsWithinRange = GetAllGridPositionWithinRange(range);
+
+            while (allGridPositionsWithinRange.MoveNext())
+            {
+                var gridPosition = allGridPositionsWithinRange.Current;
+
+                if (!HasEnoughCommandPoint())
+                {
+                    yield return (gridPosition, GridVisual.State.Red, CommandStatus.NotEnoughCommandPoint);
+                    continue;
+                }
+                
+                var unit = LevelGrid.GetUnitAtGridPosition(gridPosition);
+
+                if (!unit)
+                {
+                    yield return (gridPosition, GridVisual.State.DarkBlue, CommandStatus.TargetNotFound);
+                    continue;
+                }
+
+                if (unit.IsInsideTeam(Unit.GetTeamType()))
+                {
+                    yield return (gridPosition, GridVisual.State.DarkBlue, CommandStatus.FriendlyFire);
+                    continue;
+                }
+
+                if (IsBlockedByObstacle(unit))
+                {
+                    yield return (gridPosition, GridVisual.State.Orange, CommandStatus.Blocked);
+                    continue;
+                }
+
+                yield return (gridPosition, GridVisual.State.Blue, CommandStatus.Ok);
+            }
+            
+            allGridPositionsWithinRange.Dispose();
+        }
+        
         protected void LookTowardsPosition(Vector3 targetPosition)
         {
             var direction = targetPosition - transform.position;
@@ -163,6 +236,26 @@ namespace CommandSystem
         protected void LookTowardsUnit(Unit unit)
         {
             LookTowardsPosition(LevelGrid.GetWorldPosition(unit.GridPosition));
+        }
+        
+        protected bool IsBlockedByObstacle(Unit unit)
+        {
+            var origin = Unit.GetPosition() + Vector3.up;
+            var direction = (unit.GetPosition() - Unit.GetPosition()).normalized;
+            var distance = Vector3.Distance(unit.GetPosition(), Unit.GetPosition());
+            var hitCount = Physics
+                .RaycastNonAlloc(origin, direction, RaycastHitBuffer, distance, Physics.AllLayers, QueryTriggerInteraction.Collide);
+
+            for (var i = 0; i < hitCount; i++)
+            {
+                if (!RaycastHitBuffer[i].collider.TryGetComponent(out IObstacle obstacle)) continue;
+
+                if (obstacle is not Unit unitObstacle) return true;
+                
+                if (unit != unitObstacle && Unit != unitObstacle) return true;
+            }
+
+            return false;
         }
     }
 }

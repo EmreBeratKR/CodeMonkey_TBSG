@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using CommandSystem;
 using GridSystem;
 using UnityEngine;
+using WeaponSystem;
 
 namespace UnitSystem
 {
-    public class Unit : MonoBehaviour, IObstacle
+    public class Unit : MonoBehaviour, IObstacle, IBulletTarget
     {
-        private const int MaxCommandPoint = 10;
+        private const int MaxCommandPoint = 50;
 
 
         [SerializeField] private Ragdoll ragdollPrefab;
@@ -151,7 +152,7 @@ namespace UnitSystem
             return teamType == team;
         }
 
-        public Vector3 GetShootOffset()
+        public Vector3 GetHitOffset()
         {
             return Vector3.up * 1.5f;
         }
@@ -159,6 +160,11 @@ namespace UnitSystem
         public void Damage(int value)
         {
             health.Damage(value);
+        }
+        
+        public Vector3 GetHitPosition()
+        {
+            return GetPosition() + GetHitOffset();
         }
 
         public int GetHealth()

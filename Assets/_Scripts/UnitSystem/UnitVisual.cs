@@ -7,6 +7,7 @@ namespace UnitSystem
     {
         private static readonly int IsMovingID = Animator.StringToHash("IsMoving");
         private static readonly int ShootID = Animator.StringToHash("Shoot");
+        private static readonly int SingleShootID = Animator.StringToHash("SingleShoot");
 
 
         [SerializeField] private Unit unit;
@@ -24,7 +25,12 @@ namespace UnitSystem
 
             if (unit.TryGetCommand(out ShootCommand shootCommand))
             {
-                shootCommand.OnShoot += OnShoot;
+                shootCommand.OnShoot += ShootCommand_OnShoot;
+            }
+            
+            if (unit.TryGetComponent(out ThrowGrenadeCommand throwGrenadeCommand))
+            {
+                throwGrenadeCommand.OnShoot += ThrowGrenadeCommand_OnShoot;
             }
 
             UnitCommander.OnSelectedUnitChanged += OnSelectedUnitChanged;
@@ -40,7 +46,12 @@ namespace UnitSystem
 
             if (unit.TryGetCommand(out ShootCommand shootCommand))
             {
-                shootCommand.OnShoot -= OnShoot;
+                shootCommand.OnShoot -= ShootCommand_OnShoot;
+            }
+
+            if (unit.TryGetComponent(out ThrowGrenadeCommand throwGrenadeCommand))
+            {
+                throwGrenadeCommand.OnShoot -= ThrowGrenadeCommand_OnShoot;
             }
 
             UnitCommander.OnSelectedUnitChanged -= OnSelectedUnitChanged;
@@ -57,9 +68,14 @@ namespace UnitSystem
             SetIsMoving(false);
         }
         
-        private void OnShoot(ShootCommand.ShootArgs args)
+        private void ShootCommand_OnShoot(ShootCommand.ShootArgs args)
         {
             TriggerShoot();
+        }
+
+        private void ThrowGrenadeCommand_OnShoot()
+        {
+            TriggerSingleShoot();
         }
     
         private void OnSelectedUnitChanged(UnitCommander.SelectedUnitChangedArgs args)
@@ -77,6 +93,11 @@ namespace UnitSystem
         private void TriggerShoot()
         {
             animator.SetTrigger(ShootID);
+        }
+
+        private void TriggerSingleShoot()
+        {
+            animator.SetTrigger(SingleShootID);
         }
 
         private void SetActiveSelectedVisual(bool value)
