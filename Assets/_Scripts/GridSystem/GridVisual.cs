@@ -19,6 +19,7 @@ namespace GridSystem
                 State.Blue => new Color(0f, 0.8f, 1f),
                 State.DarkBlue => new Color(0f, 0.4f, 0.5f),
                 State.Green => Color.green,
+                State.Red => Color.red,
             };
         }
 
@@ -37,6 +38,7 @@ namespace GridSystem
             Blue,
             DarkBlue,
             Green,
+            Red
         }
     }
 }

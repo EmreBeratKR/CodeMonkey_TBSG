@@ -32,8 +32,8 @@ namespace CommandSystem
             m_PathIndex = 1;
             StartCommand(onCompleted);
         }
-        
-        public override IEnumerator<GridPosition> GetAllValidGridPositions()
+
+        public override IEnumerator<(GridPosition, GridVisual.State, CommandStatus)> GetAllGridPositionStates()
         {
             var allGridPositionWithinRange = GetAllGridPositionWithinRange(MoveRange);
 
@@ -41,37 +41,29 @@ namespace CommandSystem
             {
                 var gridPosition = allGridPositionWithinRange.Current;
 
-                if (LevelGrid.HasAnyUnitAtGridPosition(gridPosition)) continue;
-                
-                if (!Pathfinding.HasValidPath(Unit.GridPosition, gridPosition, out var cost)) continue;
-
-                var outOfRange = cost / Pathfinding.GetCostMultiplier() > MoveRange; 
-                
-                if (outOfRange) continue;
-
-                yield return gridPosition;
-            }
-            
-            allGridPositionWithinRange.Dispose();
-        }
-
-        public override IEnumerator<(GridPosition, GridVisual.State)> GetAllGridPositionStates()
-        {
-            var allGridPositionWithinRange = GetAllGridPositionWithinRange(MoveRange);
-
-            while (allGridPositionWithinRange.MoveNext())
-            {
-                var gridPosition = allGridPositionWithinRange.Current;
-
-                if (LevelGrid.HasAnyUnitAtGridPosition(gridPosition))
+                if (gridPosition == Unit.GridPosition)
                 {
-                    yield return (gridPosition, GridVisual.State.Orange);
+                    yield return (gridPosition, GridVisual.State.Clear, CommandStatus.BadSelection);
+                    continue;
+                }
+
+                var notEnoughCommandPoint = Unit.CommandPoint < GetRequiredCommandPoint();
+
+                if (notEnoughCommandPoint)
+                {
+                    yield return (gridPosition, GridVisual.State.Red, CommandStatus.NotEnoughCommandPoint);
+                    continue;
+                }
+                
+                if (LevelGrid.HasAnyObstacleAtGridPosition(gridPosition))
+                {
+                    yield return (gridPosition, GridVisual.State.Orange, CommandStatus.Blocked);
                     continue;
                 }
                 
                 if (!Pathfinding.HasValidPath(Unit.GridPosition, gridPosition, out var cost))
                 {
-                    yield return (gridPosition, GridVisual.State.Clear);
+                    yield return (gridPosition, GridVisual.State.Clear, CommandStatus.InvalidPath);
                     continue;
                 }
                 
@@ -79,11 +71,11 @@ namespace CommandSystem
 
                 if (outOfRange)
                 {
-                    yield return (gridPosition, GridVisual.State.Clear);
+                    yield return (gridPosition, GridVisual.State.Red, CommandStatus.TooFarAway);
                     continue;
                 }
 
-                yield return (gridPosition, GridVisual.State.White);
+                yield return (gridPosition, GridVisual.State.White, CommandStatus.Ok);
             }
             
             allGridPositionWithinRange.Dispose();

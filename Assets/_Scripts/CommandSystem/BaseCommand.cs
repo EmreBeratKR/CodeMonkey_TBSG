@@ -31,8 +31,7 @@ namespace CommandSystem
 
 
         public abstract void Execute(CommandArgs args, Action onCompleted);
-        public abstract IEnumerator<GridPosition> GetAllValidGridPositions();
-        public abstract IEnumerator<(GridPosition, GridVisual.State)> GetAllGridPositionStates();
+        public abstract IEnumerator<(GridPosition, GridVisual.State, CommandStatus)> GetAllGridPositionStates();
 
         public virtual string GetName()
         {
@@ -49,6 +48,22 @@ namespace CommandSystem
             return 0f;
         }
         
+        public IEnumerator<GridPosition> GetAllValidGridPositions()
+        {
+            var states = GetAllGridPositionStates();
+
+            while (states.MoveNext())
+            {
+                var status = states.Current.Item3;
+                
+                if (status != CommandStatus.Ok) continue;
+
+                yield return states.Current.Item1;
+            }
+            
+            states.Dispose();
+        }
+        
         public bool IsValidGridPosition(GridPosition gridPosition)
         {
             var validGridPositions = GetAllValidGridPositions();
@@ -56,13 +71,31 @@ namespace CommandSystem
             while (validGridPositions.MoveNext())
             {
                 if (gridPosition != validGridPositions.Current) continue;
-                
+
                 validGridPositions.Dispose();
                 return true;
             }
             
             validGridPositions.Dispose();
             return false;
+        }
+
+        public CommandStatus GetStatusByGridPosition(GridPosition gridPosition)
+        {
+            var states = GetAllGridPositionStates();
+
+            while (states.MoveNext())
+            {
+                var currentGridPosition = states.Current.Item1;
+                
+                if (currentGridPosition != gridPosition) continue;
+
+                states.Dispose();
+                return states.Current.Item3;
+            }
+            
+            states.Dispose();
+            return CommandStatus.NotFound;
         }
         
         

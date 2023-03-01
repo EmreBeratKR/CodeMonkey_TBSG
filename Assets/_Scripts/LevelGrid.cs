@@ -96,6 +96,12 @@ public class LevelGrid : ServiceBehaviour
         return GetInstance().m_Grid.IsValidGridPosition(gridPosition);
     }
 
+    public static bool HasAnyObstacleAtGridPosition(GridPosition gridPosition)
+    {
+        var gridObject = GetInstance().m_Grid.GetGridObject(gridPosition);
+        return gridObject.HasAnyObstacle();
+    }
+
 
     private static LevelGrid GetInstance()
     {

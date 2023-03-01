@@ -48,26 +48,7 @@ namespace CommandSystem
             StartCommand(onCompleted);
         }
 
-        public override IEnumerator<GridPosition> GetAllValidGridPositions()
-        {
-            var allGridPositionsWithinRange = GetAllGridPositionWithinRange(ShootRange);
-
-            while (allGridPositionsWithinRange.MoveNext())
-            {
-                var gridPosition = allGridPositionsWithinRange.Current;
-                var unit = LevelGrid.GetUnitAtGridPosition(gridPosition);
-                
-                if (!unit) continue;
-                
-                if (unit.IsInsideTeam(Unit.GetTeamType())) continue;
-
-                yield return gridPosition;
-            }
-            
-            allGridPositionsWithinRange.Dispose();
-        }
-
-        public override IEnumerator<(GridPosition, GridVisual.State)> GetAllGridPositionStates()
+        public override IEnumerator<(GridPosition, GridVisual.State, CommandStatus)> GetAllGridPositionStates()
         {
             var allGridPositionsWithinRange = GetAllGridPositionWithinRange(ShootRange);
 
@@ -78,17 +59,17 @@ namespace CommandSystem
 
                 if (!unit)
                 {
-                    yield return (gridPosition, GridVisual.State.DarkBlue);
+                    yield return (gridPosition, GridVisual.State.DarkBlue, CommandStatus.TargetNotFound);
                     continue;
                 }
 
                 if (unit.IsInsideTeam(Unit.GetTeamType()))
                 {
-                    yield return (gridPosition, GridVisual.State.DarkBlue);
+                    yield return (gridPosition, GridVisual.State.DarkBlue, CommandStatus.FriendlyFire);
                     continue;
                 }
 
-                yield return (gridPosition, GridVisual.State.Blue);
+                yield return (gridPosition, GridVisual.State.Blue, CommandStatus.Ok);
             }
             
             allGridPositionsWithinRange.Dispose();

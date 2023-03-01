@@ -1,6 +1,7 @@
 using System;
 using CommandSystem;
 using EmreBeratKR.ServiceLocator;
+using GridSystem;
 using UnityEngine;
 
 namespace UnitSystem
@@ -30,6 +31,14 @@ namespace UnitSystem
         public struct BusyChangedArgs
         {
             public bool isBusy;
+        }
+
+        public static event Action<FailedToExecuteCommandArgs> OnFailedToExecuteCommand;
+        public struct FailedToExecuteCommandArgs
+        {
+            public CommandStatus status;
+            public GridPosition gridPosition;
+            public Vector3 worldPosition;
         }
 
 
@@ -108,8 +117,6 @@ namespace UnitSystem
         
         private bool TryExecuteCommand(BaseCommand command)
         {
-            if (!command) return false;
-            
             if (!Input.GetMouseButtonDown(0)) return false;
 
             var mousePosition = GameInput.GetMouseWorldPosition();
@@ -117,10 +124,32 @@ namespace UnitSystem
             if (!mousePosition.HasValue) return false;
             
             var mouseGridPosition = LevelGrid.GetGridPosition(mousePosition.Value);
+
+            if (!command)
+            {
+                OnFailedToExecuteCommand?.Invoke(new FailedToExecuteCommandArgs
+                {
+                    status = CommandStatus.NotSelected,
+                    gridPosition = mouseGridPosition,
+                    worldPosition = LevelGrid.GetWorldPosition(mouseGridPosition)
+                });
+                return false;
+            }
+            
             var isValidGridPosition = command
                 .IsValidGridPosition(mouseGridPosition);
 
-            if (!isValidGridPosition) return false;
+            if (!isValidGridPosition)
+            {
+                var commandStatus = command.GetStatusByGridPosition(mouseGridPosition);
+                OnFailedToExecuteCommand?.Invoke(new FailedToExecuteCommandArgs
+                {
+                    status = commandStatus,
+                    gridPosition = mouseGridPosition,
+                    worldPosition = LevelGrid.GetWorldPosition(mouseGridPosition)
+                });
+                return false;
+            }
             
             if (!command.Unit.TryUseCommandPoint(command)) return false;
             

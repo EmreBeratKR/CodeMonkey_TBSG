@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using CommandSystem;
 using GridSystem;
 using UnitSystem;
 using UnityEngine;
@@ -60,7 +61,7 @@ public class LevelGridVisual : MonoBehaviour
     }
     
 
-    private static void Show(IEnumerator<(GridPosition, GridVisual.State)> gridPositions)
+    private static void Show(IEnumerator<(GridPosition, GridVisual.State, CommandStatus)> gridPositions)
     {
         while (gridPositions.MoveNext())
         {

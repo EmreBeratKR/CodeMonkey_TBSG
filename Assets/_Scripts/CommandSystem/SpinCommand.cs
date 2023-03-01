@@ -27,14 +27,9 @@ namespace CommandSystem
             StartCommand(onCompleted);
         }
 
-        public override IEnumerator<GridPosition> GetAllValidGridPositions()
+        public override IEnumerator<(GridPosition, GridVisual.State, CommandStatus)> GetAllGridPositionStates()
         {
-            yield return Unit.GridPosition;
-        }
-
-        public override IEnumerator<(GridPosition, GridVisual.State)> GetAllGridPositionStates()
-        {
-            yield return (Unit.GridPosition, GridVisual.State.Green);
+            yield return (Unit.GridPosition, GridVisual.State.Green, CommandStatus.Ok);
         }
 
         public override string GetName()
