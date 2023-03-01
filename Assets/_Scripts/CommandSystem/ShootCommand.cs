@@ -9,6 +9,8 @@ namespace CommandSystem
     public class ShootCommand : BaseCommand
     {
         private const float ShootRange = 4.5f;
+
+        private static readonly RaycastHit[] RaycastHitBuffer = new RaycastHit[10];
         
         
         [SerializeField] private Weapon weapon;
@@ -73,6 +75,12 @@ namespace CommandSystem
                 if (unit.IsInsideTeam(Unit.GetTeamType()))
                 {
                     yield return (gridPosition, GridVisual.State.DarkBlue, CommandStatus.FriendlyFire);
+                    continue;
+                }
+
+                if (IsBlockedByObstacle(unit))
+                {
+                    yield return (gridPosition, GridVisual.State.Orange, CommandStatus.Blocked);
                     continue;
                 }
 
@@ -176,6 +184,26 @@ namespace CommandSystem
             if (m_Timer > 0f) return;
             
             OnTimerDone();
+        }
+
+        private bool IsBlockedByObstacle(Unit unit)
+        {
+            var origin = Unit.GetPosition() + Vector3.up;
+            var direction = (unit.GetPosition() - Unit.GetPosition()).normalized;
+            var distance = Vector3.Distance(unit.GetPosition(), Unit.GetPosition());
+            var hitCount = Physics
+                .RaycastNonAlloc(origin, direction, RaycastHitBuffer, distance, Physics.AllLayers, QueryTriggerInteraction.Collide);
+
+            for (var i = 0; i < hitCount; i++)
+            {
+                if (!RaycastHitBuffer[i].collider.TryGetComponent(out IObstacle obstacle)) continue;
+
+                if (obstacle is not Unit unitObstacle) return true;
+                
+                if (unit != unitObstacle && Unit != unitObstacle) return true;
+            }
+
+            return false;
         }
         
         
