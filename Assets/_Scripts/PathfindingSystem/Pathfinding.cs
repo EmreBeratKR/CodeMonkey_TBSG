@@ -27,7 +27,7 @@ namespace PathfindingSystem
             {
                 var pathNode = new PathNode();
                 pathNode.GridPosition = gridPosition;
-                pathNode.GridObject = ServiceLocator.Get<LevelGrid>().GetGridObject(gridPosition);
+                pathNode.GridObject = LevelGrid.GetGridObject(gridPosition);
                 return pathNode;
             });
 

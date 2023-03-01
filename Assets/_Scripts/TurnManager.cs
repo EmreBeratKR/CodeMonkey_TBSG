@@ -21,12 +21,7 @@ public class TurnManager : ServiceBehaviour
     {
         SetTurn(1);
     }
-
-    public void NextTurn()
-    {
-        SetTurn(m_Turn + 1);
-    }
-
+    
 
     private void SetTurn(int value)
     {
@@ -37,14 +32,20 @@ public class TurnManager : ServiceBehaviour
             team = GetCurrentTeam()
         });
     }
-
-
-    private static TeamType GetCurrentTeam()
+    
+    private TeamType GetCurrentTeam()
     {
-        var instance = GetInstance();
-        return (TeamType) ((instance.m_Turn - 1) % TeamCount);
+        return (TeamType) ((m_Turn - 1) % TeamCount);
     }
 
+    
+    public static void NextTurn()
+    {
+        var instance = GetInstance();
+        instance.SetTurn(instance.m_Turn + 1);
+    }
+    
+    
     private static TurnManager GetInstance()
     {
         return ServiceLocator.Get<TurnManager>();

@@ -48,7 +48,7 @@ public class EnemyAI : BehaviourTree, IService
         var waitCommandToCompleteNode = new WaitUntilNode(() => !m_IsBusy);
         var giveTurnNode = new ActionNode(() =>
         {
-            GetTurnManager().NextTurn();
+            TurnManager.NextTurn();
             return NodeState.Succeed;
         });
         
@@ -135,8 +135,6 @@ public class EnemyAI : BehaviourTree, IService
 
     private CommandArgs GetBestCommandArgs(BaseCommand command)
     {
-        var levelGrid = GetLevelGrid();
-        
         var bestArgs = new CommandArgs();
         var bestBenefitValue = float.MinValue;
         
@@ -148,7 +146,7 @@ public class EnemyAI : BehaviourTree, IService
             var args = new CommandArgs
             {
                 gridPositionToMove = gridPosition,
-                unitToShoot = levelGrid.GetUnitAtGridPosition(gridPosition)
+                unitToShoot = LevelGrid.GetUnitAtGridPosition(gridPosition)
             };
             var benefitValue = command.GetBenefitValue(args);
             
@@ -161,16 +159,5 @@ public class EnemyAI : BehaviourTree, IService
         allValidGridPositions.Dispose();
 
         return bestArgs;
-    }
-
-
-    private static TurnManager GetTurnManager()
-    {
-        return ServiceLocator.Get<TurnManager>();
-    }
-
-    private static LevelGrid GetLevelGrid()
-    {
-        return ServiceLocator.Get<LevelGrid>();
     }
 }

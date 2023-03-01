@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using CommandSystem;
-using EmreBeratKR.ServiceLocator;
 using GridSystem;
 using UnityEngine;
 
@@ -73,8 +72,7 @@ namespace UnitSystem
         
         private void OnDead()
         {
-            var levelGrid = GetLevelGrid();
-            levelGrid.RemoveUnitFromGridPosition(this, GridPosition);
+            LevelGrid.RemoveUnitFromGridPosition(this, GridPosition);
             Die();
         }
 
@@ -193,7 +191,7 @@ namespace UnitSystem
         
         private GridPosition GetGridPosition()
         {
-            return GetLevelGrid()
+            return LevelGrid
                 .GetGridPosition(transform.position);
         }
 
@@ -202,10 +200,9 @@ namespace UnitSystem
             var gridPosition = GetGridPosition();
             
             if (gridPosition == GridPosition) return;
-
-            var levelGrid = GetLevelGrid();
-            levelGrid.RemoveUnitFromGridPosition(this, GridPosition);
-            levelGrid.AddUnitToGridPosition(this, gridPosition);
+            
+            LevelGrid.RemoveUnitFromGridPosition(this, GridPosition);
+            LevelGrid.AddUnitToGridPosition(this, gridPosition);
             GridPosition = gridPosition;
         }
 
@@ -213,7 +210,7 @@ namespace UnitSystem
         {
             RestoreCommandPoints();
             GridPosition = GetGridPosition();
-            GetLevelGrid().AddUnitToGridPosition(this, GridPosition);
+            LevelGrid.AddUnitToGridPosition(this, GridPosition);
             
             OnAnyUnitSpawned?.Invoke(this);
         }
@@ -225,11 +222,6 @@ namespace UnitSystem
             ragdoll.Setup(rootBone, m_LastImpactOffset);
             
             OnAnyUnitDead?.Invoke(this);
-        }
-
-        private static LevelGrid GetLevelGrid()
-        {
-            return ServiceLocator.Get<LevelGrid>();
         }
     }
 }

@@ -1,5 +1,4 @@
 using CommandSystem;
-using EmreBeratKR.ServiceLocator;
 using TMPro;
 using UnitSystem;
 using UnityEngine;
@@ -39,8 +38,7 @@ namespace UI
 
         private void OnClicked()
         {
-            var unitCommander = GetUnitCommander();
-            unitCommander.SetSelectedCommand(m_Command);
+            UnitCommander.SetSelectedCommand(m_Command);
         }
 
 
@@ -84,12 +82,6 @@ namespace UI
             canvasGroup.alpha = value 
                 ? interactableAlpha 
                 : notInteractableAlpha;
-        }
-        
-        
-        private static UnitCommander GetUnitCommander()
-        {
-            return ServiceLocator.Get<UnitCommander>();
         }
     }
 }

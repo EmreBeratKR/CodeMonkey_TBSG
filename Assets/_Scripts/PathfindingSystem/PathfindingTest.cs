@@ -1,4 +1,3 @@
-using EmreBeratKR.ServiceLocator;
 using GridSystem;
 using UnityEngine;
 
@@ -10,9 +9,8 @@ namespace PathfindingSystem
         {
             if (!Input.GetMouseButtonDown(0)) return;
             
-            var levelGrid = ServiceLocator.Get<LevelGrid>();
             var mousePos = GameInput.GetMouseWorldPosition();
-            var gridPos = levelGrid.GetGridPosition(mousePos.GetValueOrDefault());
+            var gridPos = LevelGrid.GetGridPosition(mousePos.GetValueOrDefault());
             var path = Pathfinding.GetPath(GridPosition.Zero, gridPos);
             
             for (int i = 0; i < path.Count - 1; i++)

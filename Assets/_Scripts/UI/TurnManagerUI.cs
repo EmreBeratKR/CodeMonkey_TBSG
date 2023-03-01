@@ -1,4 +1,3 @@
-using EmreBeratKR.ServiceLocator;
 using TMPro;
 using UnitSystem;
 using UnityEngine;
@@ -33,8 +32,7 @@ namespace UI
 
         private void OnClickedNextTurn()
         {
-            var turnManager = GetTurnManager();
-            turnManager.NextTurn();
+            TurnManager.NextTurn();
         }
         
         private void TurnManager_OnTurnChanged(TurnManager.TurnChangedArgs args)
@@ -57,12 +55,6 @@ namespace UI
         private void SetActiveNextTurnButton(bool value)
         {
             nextTurnButton.gameObject.SetActive(value);
-        }
-
-
-        private static TurnManager GetTurnManager()
-        {
-            return ServiceLocator.Get<TurnManager>();
         }
     }
 }

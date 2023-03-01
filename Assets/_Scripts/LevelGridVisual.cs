@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using EmreBeratKR.ServiceLocator;
 using GridSystem;
 using UnitSystem;
 using UnityEngine;
@@ -47,17 +46,15 @@ public class LevelGridVisual : MonoBehaviour
 
     private static void UpdateVisual()
     {
-        var unitCommander = GetUnitCommander();
-
         HideAll();
         
-        if (unitCommander.IsBusy()) return;
+        if (UnitCommander.IsBusy()) return;
+
+        var selectedCommand = UnitCommander.GetSelectedCommand();
         
-        if (!unitCommander.SelectedCommand) return;
+        if (!selectedCommand) return;
         
-        var allValidGridPosition = unitCommander
-            .SelectedCommand
-            .GetAllGridPositionStates();
+        var allValidGridPosition = selectedCommand.GetAllGridPositionStates();
         
         Show(allValidGridPosition);
     }
@@ -65,13 +62,11 @@ public class LevelGridVisual : MonoBehaviour
 
     private static void Show(IEnumerator<(GridPosition, GridVisual.State)> gridPositions)
     {
-        var levelGrid = GetLevelGrid();
-
         while (gridPositions.MoveNext())
         {
             var gridPosition = gridPositions.Current.Item1;
             var gridVisualState = gridPositions.Current.Item2;
-            levelGrid.GetGridObject(gridPosition).SetVisualState(gridVisualState);
+            LevelGrid.GetGridObject(gridPosition).SetVisualState(gridVisualState);
         }
         
         gridPositions.Dispose();
@@ -79,31 +74,18 @@ public class LevelGridVisual : MonoBehaviour
     
     private static void HideAll()
     {
-        var levelGrid = GetLevelGrid();
-
-        for (var x = 0; x < levelGrid.GetSizeX(); x++)
+        for (var x = 0; x < LevelGrid.GetSizeX(); x++)
         {
-            for (var y = 0; y < levelGrid.GetSizeY(); y++)
+            for (var y = 0; y < LevelGrid.GetSizeY(); y++)
             {
-                for (var z = 0; z < levelGrid.GetSizeZ(); z++)
+                for (var z = 0; z < LevelGrid.GetSizeZ(); z++)
                 {
                     var gridPosition = new GridPosition(x, y, z);
-                    levelGrid
+                    LevelGrid
                         .GetGridObject(gridPosition)
                         .SetVisualState(GridVisual.State.Clear);
                 }
             }
         }
-    }
-
-
-    private static UnitCommander GetUnitCommander()
-    {
-        return ServiceLocator.Get<UnitCommander>();
-    }
-    
-    private static LevelGrid GetLevelGrid()
-    {
-        return ServiceLocator.Get<LevelGrid>();
     }
 }

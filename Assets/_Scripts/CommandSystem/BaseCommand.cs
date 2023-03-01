@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using EmreBeratKR.ServiceLocator;
 using GridSystem;
 using UnitSystem;
 using UnityEngine;
@@ -91,8 +90,6 @@ namespace CommandSystem
             var maxDistanceInt = Mathf.FloorToInt(range);
             var maxGridPosition = center + new GridPosition(1, 0, 1) * maxDistanceInt;
             var minGridPosition = center - new GridPosition(1, 0, 1) * maxDistanceInt;
-            
-            var levelGrid = GetLevelGrid();
 
             for (var x = minGridPosition.x; x <= maxGridPosition.x; x++)
             {
@@ -102,7 +99,7 @@ namespace CommandSystem
                     {
                         var gridPosition = new GridPosition(x, y, z);
 
-                        if (!levelGrid.IsValidGridPosition(gridPosition)) continue;
+                        if (!LevelGrid.IsValidGridPosition(gridPosition)) continue;
 
                         var deltaGridPosition = gridPosition - center;
                         var distanceFactor = Mathf.Abs(deltaGridPosition.x) + Mathf.Abs(deltaGridPosition.z);
@@ -127,14 +124,7 @@ namespace CommandSystem
 
         protected void LookTowardsUnit(Unit unit)
         {
-            var levelGrid = GetLevelGrid();
-            LookTowardsPosition(levelGrid.GetWorldPosition(unit.GridPosition));
-        }
-
-
-        protected static LevelGrid GetLevelGrid()
-        {
-            return ServiceLocator.Get<LevelGrid>();
+            LookTowardsPosition(LevelGrid.GetWorldPosition(unit.GridPosition));
         }
     }
 }

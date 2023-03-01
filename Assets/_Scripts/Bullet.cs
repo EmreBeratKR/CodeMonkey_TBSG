@@ -1,5 +1,4 @@
 using System;
-using EmreBeratKR.ServiceLocator;
 using UnitSystem;
 using UnityEngine;
 
@@ -31,8 +30,7 @@ public class Bullet : MonoBehaviour
 
     private void MoveTowardsUnit()
     {
-        var levelGrid = GetLevelGrid();
-        var position = levelGrid
+        var position = LevelGrid
             .GetWorldPosition(m_UnitToHit.GridPosition) + m_UnitToHit.GetShootOffset();
 
         const float moveSpeed = 150f;
@@ -58,11 +56,5 @@ public class Bullet : MonoBehaviour
         Destroy(gameObject);
         trail.transform.parent = null;
         Destroy(trail.gameObject, trail.time);
-    }
-    
-
-    private static LevelGrid GetLevelGrid()
-    {
-        return ServiceLocator.Get<LevelGrid>();
     }
 }

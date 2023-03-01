@@ -33,10 +33,8 @@ namespace UnitSystem
         }
 
 
-        public BaseCommand SelectedCommand { get; private set; }
-        public Unit SelectedUnit { get; private set; }
-
-
+        private BaseCommand m_SelectedCommand;
+        private Unit m_SelectedUnit;
         private bool m_IsMyTurn;
         private bool m_IsBusy;
 
@@ -61,7 +59,7 @@ namespace UnitSystem
 
             if (TrySelectUnit()) return;
         
-            TryExecuteCommand(SelectedCommand);
+            TryExecuteCommand(m_SelectedCommand);
         }
 
         
@@ -69,24 +67,7 @@ namespace UnitSystem
         {
             m_IsMyTurn = args.team == TeamType.Player;
         }
-        
 
-        public void SetSelectedCommand(BaseCommand command)
-        {
-            if (command == SelectedCommand) return;
-            
-            SelectedCommand = command;
-            OnSelectedCommandChanged?.Invoke(new SelectedCommandChangedArgs
-            {
-                command = command
-            });
-        }
-
-        public bool IsBusy()
-        {
-            return m_IsBusy;
-        }
-        
 
         private bool TrySelectUnit()
         {
@@ -96,7 +77,7 @@ namespace UnitSystem
 
             if (!selection) return false;
 
-            if (selection == SelectedUnit) return false;
+            if (selection == m_SelectedUnit) return false;
 
             if (!selection.IsInsideTeam(TeamType.Player)) return false;
         
@@ -107,7 +88,7 @@ namespace UnitSystem
     
         private void SelectUnit(Unit unit)
         {
-            SelectedUnit = unit;
+            m_SelectedUnit = unit;
             OnSelectedUnitChanged?.Invoke(new SelectedUnitChangedArgs
             {
                 unit = unit
@@ -134,9 +115,8 @@ namespace UnitSystem
             var mousePosition = GameInput.GetMouseWorldPosition();
         
             if (!mousePosition.HasValue) return false;
-
-            var levelGrid = GetLevelGrid();
-            var mouseGridPosition = levelGrid.GetGridPosition(mousePosition.Value);
+            
+            var mouseGridPosition = LevelGrid.GetGridPosition(mousePosition.Value);
             var isValidGridPosition = command
                 .IsValidGridPosition(mouseGridPosition);
 
@@ -147,7 +127,7 @@ namespace UnitSystem
             ExecuteCommand(command, new CommandArgs
             {
                 gridPositionToMove = mouseGridPosition,
-                unitToShoot = levelGrid.GetUnitAtGridPosition(mouseGridPosition)
+                unitToShoot = LevelGrid.GetUnitAtGridPosition(mouseGridPosition)
             });
             
             return true;
@@ -166,9 +146,38 @@ namespace UnitSystem
         }
         
         
-        private static LevelGrid GetLevelGrid()
+        public static void SetSelectedCommand(BaseCommand command)
         {
-            return ServiceLocator.Get<LevelGrid>();
+            var instance = GetInstance();
+            
+            if (command == instance.m_SelectedCommand) return;
+            
+            instance.m_SelectedCommand = command;
+            OnSelectedCommandChanged?.Invoke(new SelectedCommandChangedArgs
+            {
+                command = command
+            });
+        }
+
+        public static Unit GetSelectedUnit()
+        {
+            return GetInstance().m_SelectedUnit;
+        }
+
+        public static BaseCommand GetSelectedCommand()
+        {
+            return GetInstance().m_SelectedCommand;
+        }
+        
+        public static bool IsBusy()
+        {
+            return GetInstance().m_IsBusy;
+        }
+
+
+        private static UnitCommander GetInstance()
+        {
+            return ServiceLocator.Get<UnitCommander>();
         }
     }
 }

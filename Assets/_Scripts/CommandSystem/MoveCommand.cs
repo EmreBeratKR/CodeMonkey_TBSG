@@ -35,14 +35,13 @@ namespace CommandSystem
         
         public override IEnumerator<GridPosition> GetAllValidGridPositions()
         {
-            var levelGrid = GetLevelGrid();
             var allGridPositionWithinRange = GetAllGridPositionWithinRange(MoveRange);
 
             while (allGridPositionWithinRange.MoveNext())
             {
                 var gridPosition = allGridPositionWithinRange.Current;
 
-                if (levelGrid.HasAnyUnitAtGridPosition(gridPosition)) continue;
+                if (LevelGrid.HasAnyUnitAtGridPosition(gridPosition)) continue;
 
                 yield return gridPosition;
             }
@@ -52,14 +51,13 @@ namespace CommandSystem
 
         public override IEnumerator<(GridPosition, GridVisual.State)> GetAllGridPositionStates()
         {
-            var levelGrid = GetLevelGrid();
             var allGridPositionWithinRange = GetAllGridPositionWithinRange(MoveRange);
 
             while (allGridPositionWithinRange.MoveNext())
             {
                 var gridPosition = allGridPositionWithinRange.Current;
 
-                if (levelGrid.HasAnyUnitAtGridPosition(gridPosition))
+                if (LevelGrid.HasAnyUnitAtGridPosition(gridPosition))
                 {
                     yield return (gridPosition, GridVisual.State.Orange);
                     continue;
@@ -82,8 +80,7 @@ namespace CommandSystem
             const float rewardPerNonTeamUnit = 10f;
 
             if (!Unit.TryGetCommand(out ShootCommand shootCommand)) return 0f;
-
-            var levelGrid = GetLevelGrid();
+            
             var gridPosition = args.gridPositionToMove;
             var gridPositions = GetAllGridPositionWithinRange(gridPosition, shootCommand.GetRange());
 
@@ -91,7 +88,7 @@ namespace CommandSystem
             
             while (gridPositions.MoveNext())
             {
-                var unitAtGridPosition = levelGrid.GetUnitAtGridPosition(gridPositions.Current);
+                var unitAtGridPosition = LevelGrid.GetUnitAtGridPosition(gridPositions.Current);
                 
                 if (!unitAtGridPosition) continue;
                 

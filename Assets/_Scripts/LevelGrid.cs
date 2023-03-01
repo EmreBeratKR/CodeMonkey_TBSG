@@ -37,62 +37,68 @@ public class LevelGrid : ServiceBehaviour
     }
 
 
-    public GridPosition GetGridPosition(Vector3 worldPosition)
+    public static GridPosition GetGridPosition(Vector3 worldPosition)
     {
-        return m_Grid.GetGridPosition(worldPosition);
+        return GetInstance().m_Grid.GetGridPosition(worldPosition);
     }
 
-    public Vector3 GetWorldPosition(GridPosition gridPosition)
+    public static Vector3 GetWorldPosition(GridPosition gridPosition)
     {
-        return m_Grid.GetWorldPosition(gridPosition);
+        return GetInstance().m_Grid.GetWorldPosition(gridPosition);
     }
 
-    public GridObject GetGridObject(GridPosition gridPosition)
+    public static GridObject GetGridObject(GridPosition gridPosition)
     {
-        return m_Grid.GetGridObject(gridPosition);
+        return GetInstance().m_Grid.GetGridObject(gridPosition);
     }
 
-    public int GetSizeX()
+    public static int GetSizeX()
     {
-        return m_Grid.GetSizeX();
+        return GetInstance().m_Grid.GetSizeX();
     }
 
-    public int GetSizeY()
+    public static int GetSizeY()
     {
-        return m_Grid.GetSizeY();
+        return GetInstance().m_Grid.GetSizeY();
     }
 
-    public int GetSizeZ()
+    public static int GetSizeZ()
     {
-        return m_Grid.GetSizeZ();
+        return GetInstance().m_Grid.GetSizeZ();
     }
     
-    public void AddUnitToGridPosition(Unit unit, GridPosition gridPosition)
+    public static void AddUnitToGridPosition(Unit unit, GridPosition gridPosition)
     {
-        var gridObject = m_Grid.GetGridObject(gridPosition);
+        var gridObject = GetInstance().m_Grid.GetGridObject(gridPosition);
         gridObject.AddUnit(unit);
     }
 
-    public void RemoveUnitFromGridPosition(Unit unit, GridPosition gridPosition)
+    public static void RemoveUnitFromGridPosition(Unit unit, GridPosition gridPosition)
     {
-        var gridObject = m_Grid.GetGridObject(gridPosition);
+        var gridObject = GetInstance().m_Grid.GetGridObject(gridPosition);
         gridObject.RemoveUnit(unit);
     }
 
-    public bool HasAnyUnitAtGridPosition(GridPosition gridPosition)
+    public static bool HasAnyUnitAtGridPosition(GridPosition gridPosition)
     {
-        var gridObject = m_Grid.GetGridObject(gridPosition);
+        var gridObject = GetInstance().m_Grid.GetGridObject(gridPosition);
         return gridObject.HasAnyUnit();
     }
 
-    public Unit GetUnitAtGridPosition(GridPosition gridPosition)
+    public static Unit GetUnitAtGridPosition(GridPosition gridPosition)
     {
-        var gridObject = m_Grid.GetGridObject(gridPosition);
+        var gridObject = GetInstance().m_Grid.GetGridObject(gridPosition);
         return gridObject.GetUnit();
     }
 
-    public bool IsValidGridPosition(GridPosition gridPosition)
+    public static bool IsValidGridPosition(GridPosition gridPosition)
     {
-        return m_Grid.IsValidGridPosition(gridPosition);
+        return GetInstance().m_Grid.IsValidGridPosition(gridPosition);
+    }
+
+
+    private static LevelGrid GetInstance()
+    {
+        return ServiceLocator.Get<LevelGrid>();
     }
 }

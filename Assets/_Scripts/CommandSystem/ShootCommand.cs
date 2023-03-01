@@ -50,13 +50,12 @@ namespace CommandSystem
 
         public override IEnumerator<GridPosition> GetAllValidGridPositions()
         {
-            var levelGrid = GetLevelGrid();
             var allGridPositionsWithinRange = GetAllGridPositionWithinRange(ShootRange);
 
             while (allGridPositionsWithinRange.MoveNext())
             {
                 var gridPosition = allGridPositionsWithinRange.Current;
-                var unit = levelGrid.GetUnitAtGridPosition(gridPosition);
+                var unit = LevelGrid.GetUnitAtGridPosition(gridPosition);
                 
                 if (!unit) continue;
                 
@@ -70,13 +69,12 @@ namespace CommandSystem
 
         public override IEnumerator<(GridPosition, GridVisual.State)> GetAllGridPositionStates()
         {
-            var levelGrid = GetLevelGrid();
             var allGridPositionsWithinRange = GetAllGridPositionWithinRange(ShootRange);
 
             while (allGridPositionsWithinRange.MoveNext())
             {
                 var gridPosition = allGridPositionsWithinRange.Current;
-                var unit = levelGrid.GetUnitAtGridPosition(gridPosition);
+                var unit = LevelGrid.GetUnitAtGridPosition(gridPosition);
 
                 if (!unit)
                 {
