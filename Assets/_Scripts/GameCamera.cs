@@ -1,4 +1,6 @@
+using System;
 using Cinemachine;
+using CommandSystem;
 using EmreBeratKR.ServiceLocator;
 using UnityEngine;
 
@@ -6,6 +8,7 @@ using UnityEngine;
 public class GameCamera : ServiceBehaviour
 {
     [SerializeField] private CinemachineVirtualCamera mainVirtualCamera;
+    [SerializeField] private CinemachineImpulseSource rifleFireImpulseSource;
     [SerializeField] private Transform mainTarget;
 
 
@@ -19,11 +22,18 @@ public class GameCamera : ServiceBehaviour
     {
         m_CurrentVirtualCamera = mainVirtualCamera;
         m_MainCameraTransposer = mainVirtualCamera.GetCinemachineComponent<CinemachineTransposer>();
+        
+        ShootCommand.OnAnyShoot += ShootCommand_OnAnyShoot;
     }
 
     private void Start()
     {
         m_Pitch = mainTarget.eulerAngles.x;
+    }
+
+    private void OnDestroy()
+    {
+        ShootCommand.OnAnyShoot -= ShootCommand_OnAnyShoot;
     }
 
     private void Update()
@@ -35,6 +45,12 @@ public class GameCamera : ServiceBehaviour
         HandleZoom();
     }
 
+    
+    private void ShootCommand_OnAnyShoot(ShootCommand.ShootArgs args)
+    {
+        rifleFireImpulseSource.GenerateImpulse();
+    }
+    
 
     private void HandleMovement()
     {
