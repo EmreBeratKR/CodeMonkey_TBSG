@@ -13,11 +13,6 @@ public class GameInput : ServiceBehaviour
     public static event Action OnLeftMouseButtonDown;
 
 
-    public static Vector2 MousePosition => GetMouseScreenPosition();
-    public static Vector2 MouseDelta => GetMouseDelta();
-    public static Vector2 MouseScroll => GetMouseScroll();
-
-
     private InputActions m_Actions;
     private Camera m_Camera;
 
@@ -26,10 +21,6 @@ public class GameInput : ServiceBehaviour
     {
         m_Actions = new InputActions();
         m_Actions.Enable();
-        
-        m_Actions.Player.Enable();
-        
-        m_Actions.Player.CameraMovement.Enable();
     }
 
     private void Update()
@@ -41,11 +32,6 @@ public class GameInput : ServiceBehaviour
     }
 
 
-    public static bool IsRightMouseButton()
-    {
-        return Mouse.current.rightButton.isPressed;
-    }
-    
     public static bool IsMouseOverUI()
     {
         return EventSystem.current.IsPointerOverGameObject();
@@ -94,20 +80,28 @@ public class GameInput : ServiceBehaviour
             .ReadValue<Vector2>();
     }
 
+    public static Vector2 GetCameraRotation()
+    {
+        return GetInstance()
+            .m_Actions
+            .Player
+            .CameraRotation
+            .ReadValue<Vector2>();
+    }
+
+    public static float GetCameraZoom()
+    {
+        return GetInstance()
+            .m_Actions
+            .Player
+            .CameraZoom
+            .ReadValue<float>();
+    }
+
 
     private static Vector2 GetMouseScreenPosition()
     {
         return Mouse.current.position.ReadValue();
-    }
-    
-    private static Vector2 GetMouseDelta()
-    {
-        return Mouse.current.delta.ReadValue();
-    }
-
-    private static Vector2 GetMouseScroll()
-    {
-        return Mouse.current.scroll.ReadValue();
     }
 
     private Camera GetCamera()

@@ -84,14 +84,12 @@ public class GameCamera : ServiceBehaviour
 
     private void HandleRotation()
     {
-        if (!GameInput.IsRightMouseButton()) return;
-
         const float sensitivity = 1.5f;
-        var sensitiveMouseDelta = GameInput.MouseDelta * sensitivity;
+        var sensitiveRotation = GameInput.GetCameraRotation() * sensitivity;
         const float minPitch = 0f;
         const float maxPitch = 85f;
-        m_Pitch = Mathf.Clamp(m_Pitch - sensitiveMouseDelta.y, minPitch, maxPitch);
-        m_Yaw += sensitiveMouseDelta.x;
+        m_Pitch = Mathf.Clamp(m_Pitch - sensitiveRotation.y, minPitch, maxPitch);
+        m_Yaw += sensitiveRotation.x;
 
         var eulerAngles = mainTarget.eulerAngles;
         eulerAngles.x = m_Pitch;
@@ -105,8 +103,8 @@ public class GameCamera : ServiceBehaviour
         const float minZoom = 1f;
         const float maxZoom = 15f;
         var followOffset = m_MainCameraTransposer.m_FollowOffset;
-        var sensitiveMouseScroll = GameInput.MouseScroll * sensitivity;
-        followOffset.z = Mathf.Clamp(followOffset.z + sensitiveMouseScroll.y, -maxZoom, -minZoom);
+        var sensitiveZoom = GameInput.GetCameraZoom() * sensitivity;
+        followOffset.z = Mathf.Clamp(followOffset.z + sensitiveZoom, -maxZoom, -minZoom);
         m_MainCameraTransposer.m_FollowOffset = followOffset;
     }
 
