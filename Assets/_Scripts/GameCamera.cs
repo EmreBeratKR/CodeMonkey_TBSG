@@ -73,28 +73,9 @@ public class GameCamera : ServiceBehaviour
 
     private void HandleMovement()
     {
-        var motion = Vector3.zero;
-
-        if (Input.GetKey(KeyCode.W))
-        {
-            motion.z += 1f;
-        }
-
-        if (Input.GetKey(KeyCode.S))
-        {
-            motion.z -= 1f;
-        }
-
-        if (Input.GetKey(KeyCode.D))
-        {
-            motion.x += 1f;
-        }
+        var input = GameInput.GetCameraMovement();
+        var motion = new Vector3(input.x, 0f, input.y);
         
-        if (Input.GetKey(KeyCode.A))
-        {
-            motion.x -= 1f;
-        }
-
         const float moveSpeed = 10f;
         motion = motion.normalized * (Time.deltaTime * moveSpeed);
         motion = Quaternion.Euler(Vector3.up * m_Yaw) * motion;
@@ -103,7 +84,7 @@ public class GameCamera : ServiceBehaviour
 
     private void HandleRotation()
     {
-        if (!Input.GetMouseButton(1)) return;
+        if (!GameInput.IsRightMouseButton()) return;
 
         const float sensitivity = 0.5f;
         var sensitiveMouseDelta = GameInput.MouseDelta * sensitivity;
@@ -123,7 +104,7 @@ public class GameCamera : ServiceBehaviour
         const float minZoom = 1f;
         const float maxZoom = 15f;
         var followOffset = m_MainCameraTransposer.m_FollowOffset;
-        followOffset.z = Mathf.Clamp(followOffset.z + Input.mouseScrollDelta.y, -maxZoom, -minZoom);
+        followOffset.z = Mathf.Clamp(followOffset.z + GameInput.GetCameraZoom(), -maxZoom, -minZoom);
         m_MainCameraTransposer.m_FollowOffset = followOffset;
     }
 

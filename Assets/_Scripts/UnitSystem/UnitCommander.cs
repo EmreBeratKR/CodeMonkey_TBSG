@@ -91,7 +91,7 @@ namespace UnitSystem
 
         private bool TrySelectUnit()
         {
-            if (!Input.GetMouseButtonDown(0)) return false;
+            if (!GameInput.IsLeftMouseButtonDown()) return false;
         
             var selection = GameInput.GetMouseSelection<Unit>();
 
@@ -136,7 +136,7 @@ namespace UnitSystem
         
         private bool TryExecuteCommand(BaseCommand command)
         {
-            if (!Input.GetMouseButtonDown(0)) return false;
+            if (!GameInput.IsLeftMouseButtonDown()) return false;
 
             var mousePosition = GameInput.GetMouseWorldPosition();
         

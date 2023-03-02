@@ -27,6 +27,16 @@ public class GameInput : ServiceBehaviour
     {
         return EventSystem.current.IsPointerOverGameObject();
     }
+
+    public static bool IsLeftMouseButtonDown()
+    {
+        return Input.GetMouseButtonDown(0);
+    }
+    
+    public static bool IsRightMouseButton()
+    {
+        return Input.GetMouseButton(1);
+    }
     
     public static Vector2 GetMouseScreenPosition()
     {
@@ -66,6 +76,38 @@ public class GameInput : ServiceBehaviour
         return selection.TryGetComponent(out T castedSelection)
             ? castedSelection
             : null;
+    }
+
+    public static Vector2 GetCameraMovement()
+    {
+        var motion = Vector2.zero;
+
+        if (Input.GetKey(KeyCode.W))
+        {
+            motion.y += 1f;
+        }
+
+        if (Input.GetKey(KeyCode.S))
+        {
+            motion.y -= 1f;
+        }
+
+        if (Input.GetKey(KeyCode.D))
+        {
+            motion.x += 1f;
+        }
+        
+        if (Input.GetKey(KeyCode.A))
+        {
+            motion.x -= 1f;
+        }
+
+        return motion;
+    }
+
+    public static float GetCameraZoom()
+    {
+        return Input.mouseScrollDelta.y;
     }
 
 
