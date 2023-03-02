@@ -86,7 +86,7 @@ public class GameCamera : ServiceBehaviour
     {
         if (!GameInput.IsRightMouseButton()) return;
 
-        const float sensitivity = 0.5f;
+        const float sensitivity = 1.5f;
         var sensitiveMouseDelta = GameInput.MouseDelta * sensitivity;
         const float minPitch = 0f;
         const float maxPitch = 85f;
@@ -101,10 +101,12 @@ public class GameCamera : ServiceBehaviour
 
     private void HandleZoom()
     {
+        const float sensitivity = 0.03f;
         const float minZoom = 1f;
         const float maxZoom = 15f;
         var followOffset = m_MainCameraTransposer.m_FollowOffset;
-        followOffset.z = Mathf.Clamp(followOffset.z + GameInput.GetCameraZoom(), -maxZoom, -minZoom);
+        var sensitiveMouseScroll = GameInput.MouseScroll * sensitivity;
+        followOffset.z = Mathf.Clamp(followOffset.z + sensitiveMouseScroll.y, -maxZoom, -minZoom);
         m_MainCameraTransposer.m_FollowOffset = followOffset;
     }
 

@@ -1,6 +1,8 @@
+using System;
 using EmreBeratKR.ServiceLocator;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
 
 public class GameInput : ServiceBehaviour
 {
@@ -8,42 +10,47 @@ public class GameInput : ServiceBehaviour
     [SerializeField] private LayerMask mouseSelectionLayerMask;
 
 
-    public static Vector2 MouseDelta => GetMouseDelta();
-    
-    
-    private Camera m_Camera;
-    private Vector2 m_MouseScreenPositionCurrentFrame;
-    private Vector2 m_MouseScreenPositionLastFrame;
-    private bool m_IsFirstFrame = true;
+    public static event Action OnLeftMouseButtonDown;
 
+
+    public static Vector2 MousePosition => GetMouseScreenPosition();
+    public static Vector2 MouseDelta => GetMouseDelta();
+    public static Vector2 MouseScroll => GetMouseScroll();
+
+
+    private InputActions m_Actions;
+    private Camera m_Camera;
+
+
+    private void Awake()
+    {
+        m_Actions = new InputActions();
+        m_Actions.Enable();
+        
+        m_Actions.Player.Enable();
+        
+        m_Actions.Player.CameraMovement.Enable();
+    }
 
     private void Update()
     {
-        HandleDoubleBuffering();
+        if (Mouse.current.leftButton.wasPressedThisFrame)
+        {
+            OnLeftMouseButtonDown?.Invoke();
+        }
     }
 
 
+    public static bool IsRightMouseButton()
+    {
+        return Mouse.current.rightButton.isPressed;
+    }
+    
     public static bool IsMouseOverUI()
     {
         return EventSystem.current.IsPointerOverGameObject();
     }
 
-    public static bool IsLeftMouseButtonDown()
-    {
-        return Input.GetMouseButtonDown(0);
-    }
-    
-    public static bool IsRightMouseButton()
-    {
-        return Input.GetMouseButton(1);
-    }
-    
-    public static Vector2 GetMouseScreenPosition()
-    {
-        var mousePosition = Input.mousePosition;
-        return new Vector2(mousePosition.x, mousePosition.y);
-    }
-    
     public static Vector3? GetMouseWorldPosition()
     {
         var instance = GetInstance();
@@ -80,57 +87,29 @@ public class GameInput : ServiceBehaviour
 
     public static Vector2 GetCameraMovement()
     {
-        var motion = Vector2.zero;
-
-        if (Input.GetKey(KeyCode.W))
-        {
-            motion.y += 1f;
-        }
-
-        if (Input.GetKey(KeyCode.S))
-        {
-            motion.y -= 1f;
-        }
-
-        if (Input.GetKey(KeyCode.D))
-        {
-            motion.x += 1f;
-        }
-        
-        if (Input.GetKey(KeyCode.A))
-        {
-            motion.x -= 1f;
-        }
-
-        return motion;
-    }
-
-    public static float GetCameraZoom()
-    {
-        return Input.mouseScrollDelta.y;
+        return GetInstance()
+            .m_Actions
+            .Player
+            .CameraMovement
+            .ReadValue<Vector2>();
     }
 
 
-    private static Vector2 GetMouseDelta()
+    private static Vector2 GetMouseScreenPosition()
     {
-        var instance = GetInstance();
-        return instance.m_MouseScreenPositionCurrentFrame - instance.m_MouseScreenPositionLastFrame;
-    }
-
-    private void HandleDoubleBuffering()
-    {
-        if (m_IsFirstFrame)
-        {
-            m_IsFirstFrame = false;
-            m_MouseScreenPositionLastFrame = GetMouseScreenPosition();
-            m_MouseScreenPositionCurrentFrame = m_MouseScreenPositionLastFrame;
-            return;
-        }
-
-        m_MouseScreenPositionLastFrame = m_MouseScreenPositionCurrentFrame;
-        m_MouseScreenPositionCurrentFrame = GetMouseScreenPosition();
+        return Mouse.current.position.ReadValue();
     }
     
+    private static Vector2 GetMouseDelta()
+    {
+        return Mouse.current.delta.ReadValue();
+    }
+
+    private static Vector2 GetMouseScroll()
+    {
+        return Mouse.current.scroll.ReadValue();
+    }
+
     private Camera GetCamera()
     {
         if (!m_Camera)
@@ -144,7 +123,7 @@ public class GameInput : ServiceBehaviour
     private Ray GetMousePositionRay()
     {
         return GetCamera()
-            .ScreenPointToRay(Input.mousePosition);
+            .ScreenPointToRay(GetMouseScreenPosition());
     }
     
     

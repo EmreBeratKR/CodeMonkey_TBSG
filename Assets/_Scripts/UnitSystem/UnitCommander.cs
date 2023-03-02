@@ -51,25 +51,24 @@ namespace UnitSystem
 
         private void Awake()
         {
+            GameInput.OnLeftMouseButtonDown += GameInput_OnMouseLeftButtonDown;
+            
             TurnManager.OnTurnChanged += TurnManager_OnTurnChanged;
             
             Unit.OnAnyUnitDead += OnAnyUnitDead;
         }
 
-        private void OnAnyUnitDead(Unit unit)
-        {
-            if (unit == m_SelectedUnit)
-            {
-                ClearSelectedUnit();
-            }
-        }
-
         private void OnDestroy()
         {
+            GameInput.OnLeftMouseButtonDown -= GameInput_OnMouseLeftButtonDown;
+            
             TurnManager.OnTurnChanged -= TurnManager_OnTurnChanged;
+            
+            Unit.OnAnyUnitDead -= OnAnyUnitDead;
         }
 
-        private void Update()
+
+        private void GameInput_OnMouseLeftButtonDown()
         {
             if (m_IsBusy) return;
             
@@ -81,18 +80,23 @@ namespace UnitSystem
         
             TryExecuteCommand(m_SelectedCommand);
         }
-
         
         private void TurnManager_OnTurnChanged(TurnManager.TurnChangedArgs args)
         {
             m_IsMyTurn = args.team == TeamType.Player;
         }
+        
+        private void OnAnyUnitDead(Unit unit)
+        {
+            if (unit == m_SelectedUnit)
+            {
+                ClearSelectedUnit();
+            }
+        }
 
 
         private bool TrySelectUnit()
         {
-            if (!GameInput.IsLeftMouseButtonDown()) return false;
-        
             var selection = GameInput.GetMouseSelection<Unit>();
 
             if (!selection) return false;
@@ -136,8 +140,6 @@ namespace UnitSystem
         
         private bool TryExecuteCommand(BaseCommand command)
         {
-            if (!GameInput.IsLeftMouseButtonDown()) return false;
-
             var mousePosition = GameInput.GetMouseWorldPosition();
         
             if (!mousePosition.HasValue) return false;
