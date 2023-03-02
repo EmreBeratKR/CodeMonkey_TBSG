@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2715177934619005647}
   - component: {fileID: 2715177934619005640}
-  - component: {fileID: 6204012257512608394}
+  - component: {fileID: 2495171876419215716}
   m_Layer: 7
   m_Name: Ragdoll Unit
   m_TagString: Untagged
@@ -46,28 +46,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 62fb0f8ed01046b899b3ef5a3d1401d9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  explosion: {fileID: 2495171876419215716}
+  sweeper: {fileID: 8920155452175249835}
   rootBone: {fileID: 2720063322922044512}
-  animator: {fileID: 6204012257512608394}
---- !u!95 &6204012257512608394
-Animator:
-  serializedVersion: 4
+--- !u!114 &2495171876419215716
+MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2715177934619005646}
   m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 6448824060e21474892c2953342d04d3, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3096e86c377c4aa6a6d5b8dbc2262426, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  root: {fileID: 2720063322922044512}
+  force: 150
 --- !u!1 &2715177935064980640
 GameObject:
   m_ObjectHideFlags: 0
@@ -489,6 +484,53 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 23.374346, y: 27.83693, z: 38.19783}
   m_Center: {x: -39.870907, y: 0.10077858, z: 0.00001335144}
+--- !u!114 &8920155452175249835
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2713527652434085102}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2cc43411febc46fe92e29e4217483668, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sizeCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 1.8074654
+      outSlope: 1.8074654
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.16171257
+    - serializedVersion: 3
+      time: 0.2
+      value: 1.2
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.069328524
+    - serializedVersion: 3
+      time: 1
+      value: -0.0021362305
+      inSlope: -1.9344888
+      outSlope: -1.9344888
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.046161488
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  timeInSeconds: 0.5
+  delayInSeconds: 5
 --- !u!1 &2713598351650444076 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 1861065011250198, guid: 2f3e27eecb190e44a9af50723c394274,
