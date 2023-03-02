@@ -132,6 +132,7 @@ GameObject:
   - component: {fileID: -7555391240269008436}
   - component: {fileID: -2118138524346911096}
   - component: {fileID: 2463649546915257933}
+  - component: {fileID: 4744700291789776410}
   m_Layer: 7
   m_Name: Unit
   m_TagString: Untagged
@@ -266,6 +267,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   melee: {fileID: 7068333169509591092}
   allowFriendlyFire: 0
+--- !u!114 &4744700291789776410
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1067317033996018525}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c7426b4db594cffb0bb641045e31f28, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1067317035663977779
 GameObject:
   m_ObjectHideFlags: 0

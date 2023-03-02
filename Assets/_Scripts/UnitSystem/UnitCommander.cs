@@ -176,7 +176,8 @@ namespace UnitSystem
             {
                 gridPosition = mouseGridPosition,
                 gridObject = LevelGrid.GetGridObject(mouseGridPosition),
-                unit = LevelGrid.GetUnitAtGridPosition(mouseGridPosition)
+                unit = LevelGrid.GetUnitAtGridPosition(mouseGridPosition),
+                interactable = LevelGrid.GetInteractableAtGridPosition(mouseGridPosition)
             });
             
             return true;

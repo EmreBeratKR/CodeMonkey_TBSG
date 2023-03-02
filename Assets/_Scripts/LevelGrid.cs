@@ -1,5 +1,6 @@
 using EmreBeratKR.ServiceLocator;
 using GridSystem;
+using InteractionSystem;
 using UnitSystem;
 using UnityEngine;
 
@@ -65,6 +66,12 @@ public class LevelGrid : ServiceBehaviour
     public static int GetSizeZ()
     {
         return GetInstance().m_Grid.GetSizeZ();
+    }
+
+    public static IInteractable GetInteractableAtGridPosition(GridPosition gridPosition)
+    {
+        var gridObject = GetInstance().m_Grid.GetGridObject(gridPosition);
+        return gridObject.GetInteractable();
     }
     
     public static void AddUnitToGridPosition(Unit unit, GridPosition gridPosition)

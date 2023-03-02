@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Text;
+using InteractionSystem;
 using UnitSystem;
 using UnityEngine;
 using WeaponSystem;
@@ -8,13 +9,14 @@ namespace GridSystem
 {
     public class GridObject : IBulletTarget
     {
-        private const int StaticObstacleBitmask = 1 << 8;
+        private const int GridObjectsBitmask = 1 << 8 | 1 << 9;
         private static readonly Collider[] ColliderBuffer = new Collider[10];
         
         
         private GridPosition m_GridPosition;
         private GridVisual m_Visual;
         private Grid<GridObject> m_Grid;
+        private IInteractable m_Interactable;
         private readonly List<Unit> m_Units = new();
         private readonly List<IObstacle> m_Obstacles = new();
 
@@ -23,7 +25,7 @@ namespace GridSystem
         {
             m_Grid = grid;
             m_GridPosition = gridPosition;
-            CheckObstacles();
+            CheckGridObjects();
         }
 
 
@@ -35,6 +37,11 @@ namespace GridSystem
         public Vector3 GetWorldPosition()
         {
             return m_Grid.GetWorldPosition(m_GridPosition);
+        }
+
+        public IInteractable GetInteractable()
+        {
+            return m_Interactable;
         }
         
         public void AddUnit(Unit unit)
@@ -106,16 +113,21 @@ namespace GridSystem
         }
 
 
-        private void CheckObstacles()
+        private void CheckGridObjects()
         {
             var center = GetWorldPosition();
             const float radius = 0.1f;
 
             var count = Physics
-                .OverlapSphereNonAlloc(center, radius, ColliderBuffer, StaticObstacleBitmask);
+                .OverlapSphereNonAlloc(center, radius, ColliderBuffer, GridObjectsBitmask);
 
             for (var i = 0; i < count; i++)
             {
+                if (ColliderBuffer[i].TryGetComponent(out IInteractable interactable))
+                {
+                    m_Interactable = interactable;
+                }
+                
                 if (!ColliderBuffer[i].TryGetComponent(out IObstacle obstacle)) return;
                 
                 obstacle.SetGridObject(this);

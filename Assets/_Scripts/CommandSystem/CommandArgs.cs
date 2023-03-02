@@ -1,4 +1,5 @@
 using GridSystem;
+using InteractionSystem;
 using UnitSystem;
 
 namespace CommandSystem
@@ -8,5 +9,6 @@ namespace CommandSystem
         public GridPosition gridPosition;
         public GridObject gridObject;
         public Unit unit;
+        public IInteractable interactable;
     }
 }
