@@ -10,6 +10,8 @@ namespace CommandSystem
     {
         protected const float MassiveBenefitPenalty = 9999f;
         
+        protected static readonly Collider[] ColliderBuffer = new Collider[10];
+        
         private static readonly RaycastHit[] RaycastHitBuffer = new RaycastHit[10];
         
         
@@ -183,47 +185,7 @@ namespace CommandSystem
                 }
             }
         }
-        
-        protected IEnumerator<(GridPosition, GridVisual.State, CommandStatus)> GetAllProjectileGridPositionStates(float range)
-        {
-            var allGridPositionsWithinRange = GetAllGridPositionWithinRange(range);
 
-            while (allGridPositionsWithinRange.MoveNext())
-            {
-                var gridPosition = allGridPositionsWithinRange.Current;
-
-                if (!HasEnoughCommandPoint())
-                {
-                    yield return (gridPosition, GridVisual.State.Red, CommandStatus.NotEnoughCommandPoint);
-                    continue;
-                }
-                
-                var unit = LevelGrid.GetUnitAtGridPosition(gridPosition);
-
-                if (!unit)
-                {
-                    yield return (gridPosition, GridVisual.State.DarkBlue, CommandStatus.TargetNotFound);
-                    continue;
-                }
-
-                if (unit.IsInsideTeam(Unit.GetTeamType()))
-                {
-                    yield return (gridPosition, GridVisual.State.DarkBlue, CommandStatus.FriendlyFire);
-                    continue;
-                }
-
-                if (IsBlockedByObstacle(unit))
-                {
-                    yield return (gridPosition, GridVisual.State.Orange, CommandStatus.Blocked);
-                    continue;
-                }
-
-                yield return (gridPosition, GridVisual.State.Blue, CommandStatus.Ok);
-            }
-            
-            allGridPositionsWithinRange.Dispose();
-        }
-        
         protected void LookTowardsPosition(Vector3 targetPosition)
         {
             var direction = targetPosition - transform.position;
@@ -253,6 +215,27 @@ namespace CommandSystem
                 if (obstacle is not Unit unitObstacle) return true;
                 
                 if (unit != unitObstacle && Unit != unitObstacle) return true;
+            }
+
+            return false;
+        }
+
+        protected bool IsBlockedByObstacle(GridPosition gridPosition, IObstacle ignoredObstacle = null)
+        {
+            var origin = Unit.GetPosition() + Vector3.up;
+            var position = LevelGrid.GetWorldPosition(gridPosition);
+            var direction = (position - Unit.GetPosition()).normalized;
+            var distance = Vector3.Distance(position, Unit.GetPosition());
+            var hitCount = Physics
+                .RaycastNonAlloc(origin, direction, RaycastHitBuffer, distance, Physics.AllLayers, QueryTriggerInteraction.Collide);
+
+            for (var i = 0; i < hitCount; i++)
+            {
+                if (!RaycastHitBuffer[i].collider.TryGetComponent(out IObstacle obstacle)) continue;
+
+                if (obstacle == ignoredObstacle) continue;
+                
+                return true;
             }
 
             return false;

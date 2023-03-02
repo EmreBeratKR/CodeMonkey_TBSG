@@ -36,7 +36,7 @@ namespace CommandSystem
             StartCommand(onCompleted);
             weapon.Shoot(m_TargetGridObject, () =>
             {
-                OnAnyGrenadeExplode?.Invoke();
+                Explode();
                 CompleteCommand();
             });
             OnShoot?.Invoke();
@@ -44,7 +44,36 @@ namespace CommandSystem
 
         public override IEnumerator<(GridPosition, GridVisual.State, CommandStatus)> GetAllGridPositionStates()
         {
-            return GetAllProjectileGridPositionStates(ThrowRange);
+            var allGridPositionsWithinRange = GetAllGridPositionWithinRange(ThrowRange);
+
+            while (allGridPositionsWithinRange.MoveNext())
+            {
+                var gridPosition = allGridPositionsWithinRange.Current;
+
+                if (!HasEnoughCommandPoint())
+                {
+                    yield return (gridPosition, GridVisual.State.Red, CommandStatus.NotEnoughCommandPoint);
+                    continue;
+                }
+                
+                var unit = LevelGrid.GetUnitAtGridPosition(gridPosition);
+
+                if (unit && unit.IsInsideTeam(Unit.GetTeamType()))
+                {
+                    yield return (gridPosition, GridVisual.State.DarkBlue, CommandStatus.FriendlyFire);
+                    continue;
+                }
+
+                if (IsBlockedByObstacle(gridPosition, unit))
+                {
+                    yield return (gridPosition, GridVisual.State.Orange, CommandStatus.Blocked);
+                    continue;
+                }
+
+                yield return (gridPosition, GridVisual.State.Blue, CommandStatus.Ok);
+            }
+            
+            allGridPositionsWithinRange.Dispose();
         }
 
         public override string GetName()
@@ -62,6 +91,26 @@ namespace CommandSystem
         protected override void OnDeselected()
         {
             weapon.UnEquip();
+        }
+
+
+        private void Explode()
+        {
+            var origin = m_TargetGridObject.GetWorldPosition();
+            const float explosionRadius = 1f;
+            const int damagePerTarget = 10;
+            
+            var count = Physics
+                .OverlapSphereNonAlloc(origin, explosionRadius, ColliderBuffer, Physics.AllLayers, QueryTriggerInteraction.Collide);
+
+            for (var i = 0; i < count; i++)
+            {
+                if (!ColliderBuffer[i].TryGetComponent(out ITakeDamage target)) continue;
+                
+                target.TakeDamage(damagePerTarget);
+            }
+            
+            OnAnyGrenadeExplode?.Invoke();
         }
     }
 }

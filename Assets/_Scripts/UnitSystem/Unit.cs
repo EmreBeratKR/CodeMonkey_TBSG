@@ -7,7 +7,7 @@ using WeaponSystem;
 
 namespace UnitSystem
 {
-    public class Unit : MonoBehaviour, IObstacle, IBulletTarget
+    public class Unit : MonoBehaviour, IObstacle, IBulletTarget, ITakeDamage
     {
         private const int MaxCommandPoint = 50;
 
@@ -37,6 +37,7 @@ namespace UnitSystem
 
         private BaseCommand[] m_Commands;
         private Vector3 m_LastImpactOffset;
+
 
 
         private void Awake()
@@ -84,6 +85,7 @@ namespace UnitSystem
                 m_LastImpactOffset = args.impactOffset;
             }
         }
+        
         
         private void TurnManager_OnTurnChanged(TurnManager.TurnChangedArgs args)
         {
@@ -157,7 +159,7 @@ namespace UnitSystem
             return Vector3.up * 1.5f;
         }
 
-        public void Damage(int value)
+        public void TakeDamage(int value)
         {
             health.Damage(value);
         }

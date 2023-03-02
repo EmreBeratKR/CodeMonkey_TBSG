@@ -52,7 +52,42 @@ namespace CommandSystem
 
         public override IEnumerator<(GridPosition, GridVisual.State, CommandStatus)> GetAllGridPositionStates()
         {
-            return GetAllProjectileGridPositionStates(ShootRange);
+            var allGridPositionsWithinRange = GetAllGridPositionWithinRange(ShootRange);
+
+            while (allGridPositionsWithinRange.MoveNext())
+            {
+                var gridPosition = allGridPositionsWithinRange.Current;
+
+                if (!HasEnoughCommandPoint())
+                {
+                    yield return (gridPosition, GridVisual.State.Red, CommandStatus.NotEnoughCommandPoint);
+                    continue;
+                }
+                
+                var unit = LevelGrid.GetUnitAtGridPosition(gridPosition);
+
+                if (!unit)
+                {
+                    yield return (gridPosition, GridVisual.State.DarkBlue, CommandStatus.TargetNotFound);
+                    continue;
+                }
+
+                if (unit.IsInsideTeam(Unit.GetTeamType()))
+                {
+                    yield return (gridPosition, GridVisual.State.DarkBlue, CommandStatus.FriendlyFire);
+                    continue;
+                }
+
+                if (IsBlockedByObstacle(unit))
+                {
+                    yield return (gridPosition, GridVisual.State.Orange, CommandStatus.Blocked);
+                    continue;
+                }
+
+                yield return (gridPosition, GridVisual.State.Blue, CommandStatus.Ok);
+            }
+            
+            allGridPositionsWithinRange.Dispose();
         }
 
         public override string GetName()
@@ -133,7 +168,7 @@ namespace CommandSystem
                         OnAnyShoot?.Invoke(args);
                         
                         const int damage = 10;
-                        m_UnitToShoot.Damage(damage);
+                        m_UnitToShoot.TakeDamage(damage);
                         
                         m_Timer = 0f;
                     });

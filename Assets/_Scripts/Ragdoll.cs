@@ -1,3 +1,4 @@
+using General;
 using UnityEngine;
 
 public class Ragdoll : MonoBehaviour
@@ -12,6 +13,10 @@ public class Ragdoll : MonoBehaviour
     public void Setup(Transform targetRootBone, Vector3 impactOffset)
     {
         MatchAllBones(targetRootBone, rootBone);
+
+        impactOffset = impactOffset == Vector3.zero
+            ? Randomizer.GetInsideUnitCircleXZNormalized()
+            : impactOffset;
         
         const float force = 150f;
         var explosionPosition = transform.position + impactOffset;
