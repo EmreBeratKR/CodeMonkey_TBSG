@@ -245,5 +245,14 @@ namespace CommandSystem
         {
             return unit && Unit.IsInsideTeam(unit.GetTeamType());
         }
+        
+        
+        protected static Vector3 GetImpactOffset(Unit attackerUnit, Unit attackedUnit)
+        {
+            var directionNormalized = (attackerUnit.GetPosition() - attackedUnit.GetPosition())
+                .normalized;
+            const float offsetDistance = 1f;
+            return directionNormalized * offsetDistance;
+        }
     }
 }

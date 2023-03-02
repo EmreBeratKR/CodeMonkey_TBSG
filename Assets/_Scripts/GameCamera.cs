@@ -51,7 +51,7 @@ public class GameCamera : ServiceBehaviour
     }
 
     
-    private void ShootCommand_OnAnyShoot(ShootCommand.ShootArgs args)
+    private void ShootCommand_OnAnyShoot(ShootCommand.AttackArgs args)
     {
         rifleFireImpulseSource.GenerateImpulse();
     }

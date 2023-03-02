@@ -49,6 +49,8 @@ namespace UnitSystem
             
             ShootCommand.OnAnyShoot += OnAnyUnitShoot;
             
+            MeleeCommand.OnAnyUse += OnAnyUnitMelee;
+            
             TurnManager.OnTurnChanged += TurnManager_OnTurnChanged;
         }
 
@@ -62,6 +64,8 @@ namespace UnitSystem
             health.OnDead -= OnDead;
 
             ShootCommand.OnAnyShoot -= OnAnyUnitShoot;
+
+            MeleeCommand.OnAnyUse -= OnAnyUnitMelee;
             
             TurnManager.OnTurnChanged -= TurnManager_OnTurnChanged;
         }
@@ -79,9 +83,17 @@ namespace UnitSystem
             Die();
         }
 
-        private void OnAnyUnitShoot(ShootCommand.ShootArgs args)
+        private void OnAnyUnitShoot(ShootCommand.AttackArgs args)
         {
-            if (args.shotUnit == this)
+            if (args.attackedUnit == this)
+            {
+                m_LastImpactOffset = args.impactOffset;
+            }
+        }
+
+        private void OnAnyUnitMelee(ShootCommand.AttackArgs args)
+        {
+            if (args.attackedUnit == this)
             {
                 m_LastImpactOffset = args.impactOffset;
             }

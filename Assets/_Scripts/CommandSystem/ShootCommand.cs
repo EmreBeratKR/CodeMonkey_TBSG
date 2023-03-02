@@ -16,13 +16,13 @@ namespace CommandSystem
         [SerializeField] private bool allowFriendlyFire;
 
 
-        public static event Action<ShootArgs> OnAnyShoot; 
+        public static event Action<AttackArgs> OnAnyShoot; 
 
-        public event Action<ShootArgs> OnShoot;
-        public struct ShootArgs
+        public event Action<AttackArgs> OnShoot;
+        public struct AttackArgs
         {
-            public Unit shooterUnit;
-            public Unit shotUnit;
+            public Unit attackerUnit;
+            public Unit attackedUnit;
             public Vector3 impactOffset;
         }
         
@@ -159,10 +159,10 @@ namespace CommandSystem
                     m_Timer = shootTimer;
                     weapon.Shoot(m_UnitToShoot, () =>
                     {
-                        var args = new ShootArgs
+                        var args = new AttackArgs
                         {
-                            shooterUnit = Unit,
-                            shotUnit = m_UnitToShoot,
+                            attackerUnit = Unit,
+                            attackedUnit = m_UnitToShoot,
                             impactOffset = GetImpactOffset(Unit, m_UnitToShoot)
                         };
                         OnShoot?.Invoke(args);
@@ -196,15 +196,7 @@ namespace CommandSystem
             
             OnTimerDone();
         }
-
-
-        private static Vector3 GetImpactOffset(Unit shooterUnit, Unit shotUnit)
-        {
-            var directionNormalized = (shooterUnit.GetPosition() - shotUnit.GetPosition())
-                .normalized;
-            const float offsetDistance = 1f;
-            return directionNormalized * offsetDistance;
-        }
+        
 
 
         private enum State
