@@ -27,6 +27,8 @@ public class GameCamera : ServiceBehaviour
         ShootCommand.OnAnyShoot += ShootCommand_OnAnyShoot;
 
         ThrowGrenadeCommand.OnAnyGrenadeExplode += ThrowGrenadeCommand_OnAnyGrenadeExplode;
+
+        MeleeCommand.OnAnyHit += MeleeCommand_OnAnyHit;
     }
 
     private void Start()
@@ -39,6 +41,8 @@ public class GameCamera : ServiceBehaviour
         ShootCommand.OnAnyShoot -= ShootCommand_OnAnyShoot;
         
         ThrowGrenadeCommand.OnAnyGrenadeExplode -= ThrowGrenadeCommand_OnAnyGrenadeExplode;
+        
+        MeleeCommand.OnAnyHit -= MeleeCommand_OnAnyHit;
     }
 
     private void Update()
@@ -57,6 +61,11 @@ public class GameCamera : ServiceBehaviour
     }
 
     private void ThrowGrenadeCommand_OnAnyGrenadeExplode()
+    {
+        explosionImpulseSource.GenerateImpulse();
+    }
+    
+    private void MeleeCommand_OnAnyHit()
     {
         explosionImpulseSource.GenerateImpulse();
     }

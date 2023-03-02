@@ -19,6 +19,9 @@ namespace CommandSystem
         public static event Action<ShootCommand.AttackArgs> OnAnyUse;
         public event Action<ShootCommand.AttackArgs> OnUse;
 
+        public static event Action OnAnyHit;
+        public event Action OnHit;
+
 
         private Unit m_TargetUnit;
         
@@ -34,6 +37,8 @@ namespace CommandSystem
         private void OnMeleeHit()
         {
             m_TargetUnit.TakeDamage(100);
+            OnHit?.Invoke();
+            OnAnyHit?.Invoke();
         }
 
         private void OnMeleeComplete()
