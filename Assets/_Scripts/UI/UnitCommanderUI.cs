@@ -41,6 +41,14 @@ namespace UI
         private void UnitCommander_OnSelectedUnitChanged(UnitCommander.SelectedUnitChangedArgs args)
         {
             SetBusyVisual(false);
+
+            if (!args.unit)
+            {
+                SetCommandPointAsUnknown();
+                HideAllCommandButtons();
+                return;
+            }
+            
             SetCommandPoint(args.unit.CommandPoint);
             
             HideAllCommandButtons();
@@ -109,6 +117,11 @@ namespace UI
         private void SetCommandPoint(int value)
         {
             commandPointField.text = $"Command Count: {value}";
+        }
+
+        private void SetCommandPointAsUnknown()
+        {
+            commandPointField.text = $"Command Count: ?";
         }
     }
 }

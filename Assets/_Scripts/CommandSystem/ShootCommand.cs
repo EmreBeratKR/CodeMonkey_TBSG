@@ -13,6 +13,7 @@ namespace CommandSystem
 
 
         [SerializeField] private Weapon weapon;
+        [SerializeField] private bool allowFriendlyFire;
 
 
         public static event Action<ShootArgs> OnAnyShoot; 
@@ -72,7 +73,7 @@ namespace CommandSystem
                     continue;
                 }
 
-                if (unit.IsInsideTeam(Unit.GetTeamType()))
+                if (!allowFriendlyFire && IsFriendlyFire(unit))
                 {
                     yield return (gridPosition, GridVisual.State.DarkBlue, CommandStatus.FriendlyFire);
                     continue;

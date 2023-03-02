@@ -240,5 +240,10 @@ namespace CommandSystem
 
             return false;
         }
+
+        protected bool IsFriendlyFire(Unit unit)
+        {
+            return unit && Unit.IsInsideTeam(unit.GetTeamType());
+        }
     }
 }

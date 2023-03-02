@@ -1,17 +1,13 @@
 using System;
 using UnityEngine;
 
-public class Health : MonoBehaviour
+public class Health : MonoBehaviour, IProgress
 {
-    private const int FullHealth = 100;
+    [SerializeField] private int fullHealth = 100;
     
     
-    public event Action<HealthChangedArgs> OnHealthChanged;
-    public struct HealthChangedArgs
-    {
-        public int health;
-        public float healthNormalized;
-    }
+    public event Action<ProgressChangedArgs> OnProgressChanged;
+    
 
     public event Action<TakeDamageArgs> OnTakeDamage; 
     public struct TakeDamageArgs
@@ -48,17 +44,19 @@ public class Health : MonoBehaviour
 
     private void RestoreHealth()
     {
-        SetHealth(FullHealth);
+        SetHealth(fullHealth);
     }
     
     private void SetHealth(int value)
     {
         value = Mathf.Max(0, value);
         m_Health = value;
-        OnHealthChanged?.Invoke(new HealthChangedArgs
+        OnProgressChanged?.Invoke(new ProgressChangedArgs
         {
-            health = value,
-            healthNormalized = Mathf.InverseLerp(0f, FullHealth, value)
+            minValue = 0f,
+            maxValue = fullHealth,
+            currentValue = m_Health,
+            progressNormalized = Mathf.InverseLerp(0f, fullHealth, value)
         });
 
         if (m_Health <= 0)

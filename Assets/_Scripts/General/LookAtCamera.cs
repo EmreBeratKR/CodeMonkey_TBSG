@@ -20,8 +20,10 @@ namespace General
         {
             if (mode == Mode.LookAt)
             {
-                var up = invert ? Vector3.down : Vector3.up;
-                transform.LookAt(m_CameraTransform, up);
+                var position = transform.position;
+                var delta = m_CameraTransform.position - position;
+                var lookAt = position + delta * (invert ? -1f : 1f); 
+                transform.LookAt(lookAt);
             }
 
             if (mode == Mode.LookForward)

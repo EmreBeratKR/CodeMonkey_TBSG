@@ -52,6 +52,16 @@ namespace UnitSystem
         private void Awake()
         {
             TurnManager.OnTurnChanged += TurnManager_OnTurnChanged;
+            
+            Unit.OnAnyUnitDead += OnAnyUnitDead;
+        }
+
+        private void OnAnyUnitDead(Unit unit)
+        {
+            if (unit == m_SelectedUnit)
+            {
+                ClearSelectedUnit();
+            }
         }
 
         private void OnDestroy()
@@ -104,7 +114,15 @@ namespace UnitSystem
                 unit = unit
             });
             
+            if (!unit) return;
+            
             SetSelectedCommand(unit.GetDefaultCommand());
+        }
+
+        private void ClearSelectedUnit()
+        {
+            SelectUnit(null);
+            SetSelectedCommand(null);
         }
 
         private void SetBusy(bool value)

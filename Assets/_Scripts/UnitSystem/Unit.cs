@@ -173,6 +173,11 @@ namespace UnitSystem
         {
             return health.GetHealth();
         }
+        
+        public void SetGridObject(GridObject gridObject)
+        {
+            // ignore
+        }
 
 
         private void UseCommandPoint(BaseCommand command)

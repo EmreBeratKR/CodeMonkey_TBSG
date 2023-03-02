@@ -72,6 +72,16 @@ namespace GridSystem
             m_Visual.transform.position = GetWorldPosition();
         }
 
+        public void AddObstacle(IObstacle obstacle)
+        {
+            m_Obstacles.Add(obstacle);
+        }
+
+        public void RemoveObstacle(IObstacle obstacle)
+        {
+            m_Obstacles.Remove(obstacle);
+        }
+
         public bool HasAnyObstacle()
         {
             return m_Obstacles.Count > 0;
@@ -108,7 +118,8 @@ namespace GridSystem
             {
                 if (!ColliderBuffer[i].TryGetComponent(out IObstacle obstacle)) return;
                 
-                m_Obstacles.Add(obstacle);
+                obstacle.SetGridObject(this);
+                AddObstacle(obstacle);
             }
         }
     }

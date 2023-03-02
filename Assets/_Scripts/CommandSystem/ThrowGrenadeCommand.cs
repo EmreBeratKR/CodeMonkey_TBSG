@@ -12,6 +12,7 @@ namespace CommandSystem
 
 
         [SerializeField] private Weapon weapon;
+        [SerializeField] private bool allowFriendlyFire = true;
 
 
         public static event Action OnAnyGrenadeExplode;
@@ -58,7 +59,7 @@ namespace CommandSystem
                 
                 var unit = LevelGrid.GetUnitAtGridPosition(gridPosition);
 
-                if (unit && unit.IsInsideTeam(Unit.GetTeamType()))
+                if (!allowFriendlyFire && IsFriendlyFire(unit))
                 {
                     yield return (gridPosition, GridVisual.State.DarkBlue, CommandStatus.FriendlyFire);
                     continue;
@@ -97,7 +98,7 @@ namespace CommandSystem
         private void Explode()
         {
             var origin = m_TargetGridObject.GetWorldPosition();
-            const float explosionRadius = 1f;
+            const float explosionRadius = 1.5f;
             const int damagePerTarget = 10;
             
             var count = Physics
