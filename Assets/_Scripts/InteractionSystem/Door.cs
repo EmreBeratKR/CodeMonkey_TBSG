@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using GridSystem;
 using UnitSystem;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace InteractionSystem
 {
@@ -11,6 +12,8 @@ namespace InteractionSystem
         [SerializeField] private DoorVisual visual;
         [SerializeField] private float toggleDuration = 0.5f;
 
+
+        public UnityEvent onOpen, onClose;
 
         public event Action<bool> OnToggle;
 
@@ -85,6 +88,15 @@ namespace InteractionSystem
             }
             
             OnToggle?.Invoke(value);
+
+            if (value)
+            {
+                onOpen?.Invoke();
+            }
+            else
+            {
+                onClose?.Invoke();
+            }
         }
     }
 }

@@ -83,6 +83,11 @@ namespace CommandSystem
             return commandName;
         }
 
+        public override int GetRequiredCommandPoint()
+        {
+            return 2;
+        }
+
 
         protected override void OnSelected()
         {

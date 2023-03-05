@@ -6,7 +6,7 @@ using UnityEngine;
 
 public class LevelGrid : ServiceBehaviour
 {
-    public const int SizeX = 19;
+    public const int SizeX = 22;
     public const int SizeZ = 32;
     
     

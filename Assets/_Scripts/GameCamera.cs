@@ -1,7 +1,7 @@
-using System;
 using Cinemachine;
 using CommandSystem;
 using EmreBeratKR.ServiceLocator;
+using General;
 using UnityEngine;
 
 [ServiceSceneLoad(ServiceSceneLoadMode.Destroy)]
@@ -11,6 +11,8 @@ public class GameCamera : ServiceBehaviour
     [SerializeField] private CinemachineImpulseSource rifleFireImpulseSource;
     [SerializeField] private CinemachineImpulseSource explosionImpulseSource;
     [SerializeField] private Transform mainTarget;
+    [SerializeField] private FloatRange xPositionRange;
+    [SerializeField] private FloatRange zPositionRange;
 
 
     private CinemachineTransposer m_MainCameraTransposer;
@@ -79,7 +81,10 @@ public class GameCamera : ServiceBehaviour
         const float moveSpeed = 10f;
         motion = motion.normalized * (Time.deltaTime * moveSpeed);
         motion = Quaternion.Euler(Vector3.up * m_Yaw) * motion;
-        mainTarget.position += motion;
+        var position = mainTarget.position + motion;
+        position.x = xPositionRange.Clamp(position.x);
+        position.z = zPositionRange.Clamp(position.z);
+        mainTarget.position = position;
     }
 
     private void HandleRotation()

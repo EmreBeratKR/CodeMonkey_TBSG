@@ -9,7 +9,7 @@ namespace CommandSystem
 {
     public class MoveCommand : BaseCommand
     {
-        private const float MoveRange = 3f;
+        private const float MoveRange = 5f;
         
         
         private IReadOnlyList<Vector3> m_Path;

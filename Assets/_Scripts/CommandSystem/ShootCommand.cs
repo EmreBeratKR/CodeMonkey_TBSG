@@ -168,7 +168,7 @@ namespace CommandSystem
                         OnShoot?.Invoke(args);
                         OnAnyShoot?.Invoke(args);
                         
-                        const int damage = 10;
+                        const int damage = 20;
                         m_UnitToShoot.TakeDamage(damage);
                         
                         m_Timer = 0f;

@@ -8,9 +8,9 @@ using WeaponSystem;
 
 namespace UnitSystem
 {
-    public class Unit : MonoBehaviour, IObstacle, IBulletTarget, ITakeDamage
+    public class Unit : MonoBehaviour, IObstacle, IBulletTarget, ITakeDamage, ITriggerSource
     {
-        private const int MaxCommandPoint = 50;
+        private const int MaxCommandPoint = 3;
 
 
         [SerializeField] private Ragdoll ragdollPrefab;
