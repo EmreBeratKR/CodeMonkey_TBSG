@@ -89,7 +89,7 @@ public class GameCamera : ServiceBehaviour
 
     private void HandleRotation()
     {
-        const float sensitivity = 1.5f;
+        const float sensitivity = 0.25f;
         var sensitiveRotation = GameInput.GetCameraRotation() * sensitivity;
         const float minPitch = 0f;
         const float maxPitch = 85f;
